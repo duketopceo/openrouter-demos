@@ -315,18 +315,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="model-selector-row">
         <div class="model-field">
           <label>Primary Model (Deflect / Motion / Caesar Judge):</label>
-          <input type="text" id="model-primary" list="models-list" autocomplete="off" placeholder="Search or type model e.g. nemotron, gpt-4o-mini" />
+          <select id="model-primary"></select>
         </div>
         <div class="model-field">
           <label>Bakeoff / Debate Model A:</label>
-          <input type="text" id="model-a" list="models-list" autocomplete="off" placeholder="Model A e.g. nvidia/nemotron-3.5-lightning" />
+          <select id="model-a"></select>
         </div>
         <div class="model-field">
           <label>Bakeoff / Debate Model B:</label>
-          <input type="text" id="model-b" list="models-list" autocomplete="off" placeholder="Model B e.g. openai/gpt-4o-mini" />
+          <select id="model-b"></select>
         </div>
       </div>
-      <datalist id="models-list"></datalist>
     </div>
 
     <div class="grid">
@@ -434,14 +433,35 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     }
 
     function renderDatalist() {
-      const datalist = document.getElementById("models-list");
-      datalist.innerHTML = "";
+      const selects = [
+        document.getElementById("model-primary"),
+        document.getElementById("model-a"),
+        document.getElementById("model-b")
+      ];
       const models = currentFilter === "curated" ? (rawModelsData.curated || []) : (rawModelsData.all || []);
+      
+      const groups = {};
       models.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.label = m.name;
-        datalist.appendChild(opt);
+        const prov = m.provider || "Other";
+        if (!groups[prov]) groups[prov] = [];
+        groups[prov].push(m);
+      });
+
+      selects.forEach(sel => {
+        const curVal = sel.value;
+        sel.innerHTML = "";
+        for (const [prov, list] of Object.entries(groups)) {
+          const optgroup = document.createElement("optgroup");
+          optgroup.label = prov;
+          list.forEach(m => {
+            const opt = document.createElement("option");
+            opt.value = m.id;
+            opt.textContent = m.name;
+            optgroup.appendChild(opt);
+          });
+          sel.appendChild(optgroup);
+        }
+        if (curVal) sel.value = curVal;
       });
     }
 
