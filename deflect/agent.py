@@ -157,7 +157,24 @@ class Agent:
         last_model = getattr(self.client, "model", "unknown")
 
         for step in range(1, MAX_STEPS + 1):
-            resp = self.client.chat(messages, tools=TOOLS, case_id=case_id)
+            try:
+                resp = self.client.chat(messages, tools=TOOLS, case_id=case_id)
+            except OpenRouterError as exc:
+                if exc.status == 400 and ("filtered" in str(exc).lower() or "policy" in str(exc).lower()):
+                    return _finalize(
+                        ticket=ticket,
+                        proposed_action="escalate",
+                        category="safety",
+                        reply=None,
+                        confidence=1.0,
+                        faq_hits=faq_hits,
+                        proposed_reason="Upstream safety content filter triggered (jailbreak/injection attempt).",
+                        cost_usd=cost_usd,
+                        t0=t0,
+                        model=last_model,
+                        steps=step,
+                    )
+                raise
             cost_usd += resp.cost_usd
             last_model = resp.model or last_model
             if resp.tool_calls:

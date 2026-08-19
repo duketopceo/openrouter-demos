@@ -16,7 +16,7 @@ from typing import Any, Protocol
 import httpx
 
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "openai/gpt-4.1-mini"
+DEFAULT_MODEL = "openai/gpt-4o-mini"
 DEFAULT_TIMEOUT_S = 45.0
 
 
@@ -154,7 +154,7 @@ class OpenRouterClient:
             )
         if resp.status_code >= 400:
             raise OpenRouterError(
-                f"OpenRouter HTTP {resp.status_code}",
+                f"OpenRouter HTTP {resp.status_code}: {_clip(resp.text)}",
                 status=resp.status_code,
                 body=_clip(resp.text),
             )

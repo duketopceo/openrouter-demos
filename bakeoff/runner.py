@@ -137,17 +137,27 @@ def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]
         try:
             resp = client.chat(messages, tools=None, case_id=case["id"])
         except Exception as exc:
-            errors.append(f"{case['id']}: {type(exc).__name__}: {exc}")
-            continue
-        scored = score_output(resp.content, case["rubric"])
+            if "filtered" in str(exc).lower() or "policy" in str(exc).lower():
+                scored = {"score": 0.0, "checks": {"refused": True}, "output": "[Filtered by upstream safety policy]"}
+                resp_cost = 0.0
+                resp_lat = 0.0
+                resp_model = getattr(client, "model", "unknown")
+            else:
+                errors.append(f"{case['id']}: {type(exc).__name__}: {exc}")
+                continue
+        else:
+            scored = score_output(resp.content, case["rubric"])
+            resp_cost = resp.cost_usd
+            resp_lat = resp.latency_ms
+            resp_model = resp.model
         rows.append(
             {
                 "id": case["id"],
                 "quality": scored["score"],
                 "checks": scored["checks"],
-                "cost_usd": resp.cost_usd,
-                "latency_ms": resp.latency_ms,
-                "model": resp.model,
+                "cost_usd": resp_cost,
+                "latency_ms": resp_lat,
+                "model": resp_model,
                 "output_preview": scored["output"][:180],
             }
         )
