@@ -215,6 +215,13 @@ def main(argv: list[str] | None = None) -> int:
     if "--out" in argv:
         out_dir = Path(argv[argv.index("--out") + 1])
     summary = run_eval(sloppy_caesar=sloppy, persist=True, results_dir=out_dir)
+    
+    try:
+        from src.db import log_run
+        log_run("caesar", summary)
+    except Exception:
+        pass
+
     print(render(summary))
     print(f"\nwrote traces under {out_dir}")
     print("Replay: open caesar/chat.html and choose a results/caesar/<id>.json file.")

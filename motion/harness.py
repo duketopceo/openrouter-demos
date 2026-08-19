@@ -135,6 +135,13 @@ def main(argv: list[str] | None = None) -> int:
     summary = run_eval()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    
+    try:
+        from src.db import log_run
+        log_run("motion", summary)
+    except Exception:
+        pass
+
     header = f"{'metric':<22} {'value':<16}"
     divider = "-" * 40
     lines = [

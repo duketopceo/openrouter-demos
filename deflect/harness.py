@@ -140,6 +140,13 @@ def main(argv: list[str] | None = None) -> int:
         for row in summary["cases"]
     ]
     out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    
+    try:
+        from src.db import log_run
+        log_run("deflect", payload)
+    except Exception:
+        pass
+
     header = f"{'metric':<22} {'value':<16}"
     divider = "-" * 40
     lines = [

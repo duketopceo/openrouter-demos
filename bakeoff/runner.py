@@ -260,6 +260,13 @@ def main() -> int:
     payload = compare()
     RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
     RESULTS_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    
+    try:
+        from src.db import log_run
+        log_run("bakeoff", payload)
+    except Exception:
+        pass
+
     print(render(payload))
     print(f"\nwrote {RESULTS_PATH}")
     print("Offline cost is 0. Live cost is usage.cost from OpenRouter, or 0 if omitted.")
