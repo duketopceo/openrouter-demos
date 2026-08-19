@@ -293,17 +293,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="model-selector-row">
         <div class="model-field">
           <label>Primary Model (Deflect / Motion / Caesar Judge):</label>
-          <select id="model-primary"></select>
+          <input type="text" id="model-primary" list="models-list" autocomplete="off" placeholder="Search or type model e.g. nemotron, gpt-4o-mini" />
         </div>
         <div class="model-field">
           <label>Bakeoff / Debate Model A:</label>
-          <select id="model-a"></select>
+          <input type="text" id="model-a" list="models-list" autocomplete="off" placeholder="Model A e.g. nvidia/nemotron-3.5-lightning" />
         </div>
         <div class="model-field">
           <label>Bakeoff / Debate Model B:</label>
-          <select id="model-b"></select>
+          <input type="text" id="model-b" list="models-list" autocomplete="off" placeholder="Model B e.g. openai/gpt-4o-mini" />
         </div>
       </div>
+      <datalist id="models-list"></datalist>
     </div>
 
     <div class="grid">
@@ -387,33 +388,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const res = await fetch("/api/models");
         const models = await res.json();
         
-        const selects = [
-          document.getElementById("model-primary"),
-          document.getElementById("model-a"),
-          document.getElementById("model-b")
-        ];
+        const datalist = document.getElementById("models-list");
+        datalist.innerHTML = "";
 
-        // Group models by provider
-        const groups = {};
         models.forEach(m => {
-          const prov = m.provider || "Other";
-          if (!groups[prov]) groups[prov] = [];
-          groups[prov].push(m);
-        });
-
-        selects.forEach(sel => {
-          sel.innerHTML = "";
-          for (const [prov, list] of Object.entries(groups)) {
-            const optgroup = document.createElement("optgroup");
-            optgroup.label = prov;
-            list.forEach(m => {
-              const opt = document.createElement("option");
-              opt.value = m.id;
-              opt.textContent = m.name;
-              optgroup.appendChild(opt);
-            });
-            sel.appendChild(optgroup);
-          }
+          const opt = document.createElement("option");
+          opt.value = m.id;
+          opt.label = m.name;
+          datalist.appendChild(opt);
         });
 
         checkEnvStatus();
