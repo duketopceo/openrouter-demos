@@ -16,7 +16,7 @@ from typing import Any, Protocol
 import httpx
 
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "openai/gpt-4o-mini"
+DEFAULT_MODEL = "nvidia/nemotron-3.5-lightning"
 DEFAULT_TIMEOUT_S = 45.0
 
 

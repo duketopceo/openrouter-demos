@@ -438,9 +438,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
           badge.style.color = "#8b949e";
         }
         if (data.models) {
-          if (data.models.primary) document.getElementById("model-primary").value = data.models.primary;
-          if (data.models.modelA) document.getElementById("model-a").value = data.models.modelA;
-          if (data.models.modelB) document.getElementById("model-b").value = data.models.modelB;
+          if (data.models.primary) document.getElementById("model-primary").value = data.models.primary || "nvidia/nemotron-3.5-lightning";
+          if (data.models.modelA) document.getElementById("model-a").value = data.models.modelA || "nvidia/nemotron-3.5-lightning";
+          if (data.models.modelB) document.getElementById("model-b").value = data.models.modelB || "openai/gpt-4o-mini";
         }
       } catch (e) {
         logAppend("Error fetching env status: " + e, "warn");
@@ -587,9 +587,9 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             key = os.environ.get("OPENROUTER_API_KEY") or file_env.get("OPENROUTER_API_KEY", "")
             masked = f"{key[:7]}...{key[-4:]}" if len(key) > 12 else ""
             models_info = {
-                "primary": file_env.get("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
-                "modelA": file_env.get("OPENROUTER_MODEL_A", "openai/gpt-4o-mini"),
-                "modelB": file_env.get("OPENROUTER_MODEL_B", "nvidia/nemotron-3.5-lightning"),
+                "primary": file_env.get("OPENROUTER_MODEL", "nvidia/nemotron-3.5-lightning"),
+                "modelA": file_env.get("OPENROUTER_MODEL_A", "nvidia/nemotron-3.5-lightning"),
+                "modelB": file_env.get("OPENROUTER_MODEL_B", "openai/gpt-4o-mini"),
             }
             self._send_json({"hasKey": bool(key), "maskedKey": masked, "models": models_info})
             return
