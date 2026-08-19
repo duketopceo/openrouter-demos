@@ -243,12 +243,16 @@ def render(payload: dict[str, Any]) -> str:
     lines = [header, "-" * len(header)]
     for key in ("a", "b"):
         s = payload[key]
-        gate = "PASS" if s["gate"]["pass"] else "FAIL"
+        gate_pass = s["gate"]["pass"]
+        gate_str = "PASS" if gate_pass else "FAIL"
         lines.append(
             f"{s['model']:<26} {s['n']:>3}  {s['quality']:>7.3f}  "
             f"{s['mean_latency_ms']:>8.1f}  {s.get('mean_ttft_ms', 0.0):>8.1f}  "
-            f"{s.get('mean_tokens_per_sec', 0.0):>6.1f}  {s['total_cost_usd']:>8.4f}  {gate:>6}"
+            f"{s.get('mean_tokens_per_sec', 0.0):>6.1f}  {s['total_cost_usd']:>8.4f}  {gate_str:>6}"
         )
+        if not gate_pass and s["gate"].get("reasons"):
+            for r in s["gate"]["reasons"]:
+                lines.append(f"   ↳ [Gate Fail Reason] {r}")
     return "\n".join(lines)
 
 

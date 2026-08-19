@@ -155,8 +155,19 @@ class OpenRouterClient:
                 body=_clip(resp.text),
             )
         if resp.status_code >= 400:
+            err_detail = _clip(resp.text)
+            try:
+                err_json = resp.json().get("error", {})
+                if isinstance(err_json, dict):
+                    msg = err_json.get("message")
+                    meta = err_json.get("metadata", {})
+                    raw_meta = meta.get("raw") if isinstance(meta, dict) else None
+                    if msg:
+                        err_detail = f"{msg} | Metadata: {raw_meta}" if raw_meta else msg
+            except Exception:
+                pass
             raise OpenRouterError(
-                f"OpenRouter HTTP {resp.status_code}: {_clip(resp.text)}",
+                f"OpenRouter HTTP {resp.status_code}: {err_detail}",
                 status=resp.status_code,
                 body=_clip(resp.text),
             )
