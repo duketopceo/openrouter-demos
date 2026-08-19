@@ -185,7 +185,12 @@ def render(summary: dict[str, Any]) -> str:
         f"{'id':<22} {'end':<12} {'exp':<12} {'win':<4} "
         f"{'rnd':>3} {'cost':>8} {'lat_ms':>8} {'ok':>4}"
     )
-    lines = [header, "-" * len(header)]
+    divider = "=" * 80
+    lines = [
+        "============================== Caesar Debate Summary ==============================",
+        header,
+        "-" * len(header)
+    ]
     for row in summary["cases"]:
         ok = "Y" if row["end_ok"] else "N"
         lines.append(
@@ -195,10 +200,11 @@ def render(summary: dict[str, Any]) -> str:
         )
     lines.append("-" * len(header))
     lines.append(
-        f"n={summary['n']}  end_accuracy={summary['end_accuracy']}  "
-        f"concessions={summary['concessions']}  max_rounds={summary['max_rounds']}  "
-        f"total_cost_usd={summary['total_cost_usd']}"
+        f"Cases (n)={summary['n']} | End Accuracy={summary['end_accuracy']*100:.1f}% | "
+        f"Concessions={summary['concessions']} | Max Rounds={summary['max_rounds']} | "
+        f"Total Cost=${summary['total_cost_usd']:.6f}"
     )
+    lines.append(divider)
     return "\n".join(lines)
 
 

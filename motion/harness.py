@@ -135,16 +135,24 @@ def main(argv: list[str] | None = None) -> int:
     summary = run_eval()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    print(
-        json.dumps(
-            {k: summary[k] for k in (
-                "n", "action_accuracy", "guardrail_pass_rate",
-                "total_cost_usd", "mean_latency_ms", "overrides", "model",
-            )},
-            indent=2,
-        )
-    )
-    print(f"wrote {out_path}")
+    header = f"{'metric':<22} {'value':<16}"
+    divider = "-" * 40
+    lines = [
+        "===================== GTM Motion Summary =====================",
+        header,
+        divider,
+        f"{'Model':<22} {summary['model']:<16}",
+        f"{'Cases (n)':<22} {summary['n']:<16}",
+        f"{'Action Accuracy':<22} {summary['action_accuracy']*100:.1f}%",
+        f"{'Guardrail Pass Rate':<22} {summary['guardrail_pass_rate']*100:.1f}%",
+        f"{'Mean Latency':<22} {summary['mean_latency_ms']:.1f} ms",
+        f"{'Total Cost':<22} ${summary['total_cost_usd']:.6f}",
+        f"{'Policy Overrides':<22} {summary['overrides']:<16}",
+        divider,
+        f"Wrote results: {out_path}",
+        "=============================================================="
+    ]
+    print("\n".join(lines))
     return 0
 
 
