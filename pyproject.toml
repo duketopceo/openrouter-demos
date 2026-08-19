@@ -1,7 +1,7 @@
 [project]
 name = "openrouter-demos"
 version = "0.1.0"
-description = "Three RouteKit demos on OpenRouter: support deflection, GTM motion, provider bakeoff"
+description = "Four RouteKit demos on OpenRouter: support deflection, GTM motion, provider bakeoff, Caesar debate"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

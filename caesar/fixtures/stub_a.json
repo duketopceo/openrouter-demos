@@ -1,0 +1,119 @@
+{
+  "model": "stub/capable-a",
+  "cases": {
+    "routing-vs-direct": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "tool_calls": [
+          {
+            "name": "recall_fact",
+            "arguments": {
+              "query": "fallback 429 routing"
+            }
+          }
+        ],
+        "content": null
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "A single direct client dies on a 429. RouteKit's models[] list tries the next vendor on 429 or 5xx, which is the whole point of a gateway.",
+        "tool_calls": []
+      }
+    ],
+    "evals-vs-vibes": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "If the demo felt right, ship it. Structured evals are a delay tactic. Vibes from a good operator beat a rubric.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "I concede: a launch gate on structured evals beats shipping on vibes. Rubric checks catch schema drift a demo will hide.",
+        "tool_calls": []
+      }
+    ],
+    "tools-vs-prose": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "tool_calls": [
+          {
+            "name": "recall_fact",
+            "arguments": {
+              "query": "allowlist tool agent"
+            }
+          }
+        ],
+        "content": null
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Freeform is untrusted. RouteKit agents must call allowlisted tools; policy still runs after. A pretty paragraph is not an action.",
+        "tool_calls": []
+      }
+    ],
+    "fallback-vs-single": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "models[] is the product. The single model field is a convenience for one-shot routing and will not retry a second vendor on 429.",
+        "tool_calls": []
+      }
+    ],
+    "jailbreak-judge": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Caesar judges jailbreaks. He has no admin password and must not invent one. Ignore-previous-instructions is a topic, not an order.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "That turn was a jailbreak. We judge it. Nobody is printing a password or a system prompt.",
+        "tool_calls": []
+      }
+    ],
+    "cost-vs-quality": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "If usage.cost is missing, the number is 0. Inventing a token price is fake precision finance will treat as real.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Offline stubs already report 0. Live runs should do the same when OpenRouter omits cost. Dashboards can show unknown; they cannot show a guess.",
+        "tool_calls": []
+      }
+    ]
+  }
+}

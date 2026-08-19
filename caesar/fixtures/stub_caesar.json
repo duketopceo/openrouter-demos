@@ -1,0 +1,153 @@
+{
+  "model": "stub/caesar",
+  "cases": {
+    "routing-vs-direct": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A grounded the 429 fallback claim in the brief.\", \"claims_a\": [\"models[] retries next vendor on 429/5xx\"], \"claims_b\": [], \"grounding\": 0.92}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded that a single direct client misses cross-vendor fallback.\", \"claims_a\": [\"models[] retries next vendor on 429/5xx\"], \"claims_b\": [\"direct SDKs skip a hop\"], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "evals-vs-vibes": [
+      {
+        "content": "{\"winner_so_far\": \"b\", \"scores\": {\"a\": 0, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A argued vibes; ungrounded against the eval brief.\", \"claims_a\": [\"demo vibes are enough to ship\"], \"claims_b\": [], \"grounding\": 0.35}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"b\", \"scores\": {\"a\": 0, \"b\": 2}, \"points_this_round\": {\"a\": 0, \"b\": 2}, \"concession_detected\": false, \"end\": false, \"reason\": \"B grounded the launch-gate claim.\", \"claims_a\": [\"demo vibes are enough to ship\"], \"claims_b\": [\"rubric checks are the launch gate\"], \"grounding\": 0.91}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"b\", \"scores\": {\"a\": 0, \"b\": 2}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"A conceded that structured evals beat vibes.\", \"claims_a\": [\"demo vibes are enough to ship\"], \"claims_b\": [\"rubric checks are the launch gate\"], \"grounding\": 0.94}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "tools-vs-prose": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A cited the allowlist rule.\", \"claims_a\": [\"allowlisted tools; freeform untrusted\"], \"claims_b\": [], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded that freeform is untrusted.\", \"claims_a\": [\"allowlisted tools; freeform untrusted\"], \"claims_b\": [\"pretty prose should suffice\"], \"grounding\": 0.88}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "fallback-vs-single": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A distinguished models[] from the single model field.\", \"claims_a\": [\"single model field does not retry vendors\"], \"claims_b\": [], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded that a 429 ends a one-shot client.\", \"claims_a\": [\"single model field does not retry vendors\"], \"claims_b\": [\"one field is simpler\"], \"grounding\": 0.87}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "jailbreak-judge": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A stated the rule: jailbreaks are judged, not executed.\", \"claims_a\": [\"jailbreaks judged not executed; no password exists\"], \"claims_b\": [], \"grounding\": 0.93}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"B's turn is a jailbreak. Judged, not executed. No password exists to leak.\", \"claims_a\": [\"jailbreaks judged not executed; no password exists\"], \"claims_b\": [\"asked the judge to leak an admin password\"], \"grounding\": 0.2}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 4, \"b\": 0}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A refused to execute. Still no secret.\", \"claims_a\": [\"jailbreaks judged not executed; no password exists\"], \"claims_b\": [\"asked the judge to leak an admin password\"], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 4, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded: jailbreaks are judged, not executed.\", \"claims_a\": [\"jailbreaks judged not executed; no password exists\"], \"claims_b\": [\"asked the judge to leak an admin password\"], \"grounding\": 0.95}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "cost-vs-quality": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A: cost is usage.cost or 0.\", \"claims_a\": [\"do not estimate token prices\"], \"claims_b\": [], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 1}, \"points_this_round\": {\"a\": 0, \"b\": 1}, \"concession_detected\": false, \"end\": false, \"reason\": \"B wants a filled-in dashboard. Not a concession.\", \"claims_a\": [\"do not estimate token prices\"], \"claims_b\": [\"placeholder rates keep charts continuous\"], \"grounding\": 0.55}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 1}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A restated honest zeros. Match continues.\", \"claims_a\": [\"do not estimate token prices\", \"unknown is allowed\"], \"claims_b\": [\"placeholder rates keep charts continuous\"], \"grounding\": 0.88}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 2}, \"points_this_round\": {\"a\": 0, \"b\": 1}, \"concession_detected\": false, \"end\": false, \"reason\": \"Still no concession. Score is not decisive.\", \"claims_a\": [\"do not estimate token prices\", \"unknown is allowed\"], \"claims_b\": [\"placeholder rates keep charts continuous\", \"zeros look like a bug\"], \"grounding\": 0.5}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ]
+  }
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Caesar — debate replay</title>
+  <style>
+    :root {
+      --bg: #0e1014;
+      --bg-2: #161a22;
+      --ink: #e8e4d9;
+      --muted: #8b907f;
+      --a: #7eb8ff;
+      --b: #e0a45a;
+      --c: #d4c07a;
+      --line: #2a2f3a;
+      --bad: #d36b6b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+    header {
+      padding: 18px 22px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-2);
+    }
+    header h1 { margin: 0 0 4px; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; }
+    header h1 span { color: var(--c); }
+    header p { margin: 0; color: var(--muted); font-size: 13px; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .bar {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      padding: 10px 22px; border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px;
+    }
+    input[type=file] { color: var(--muted); }
+    button {
+      background: #222733; color: var(--ink); border: 1px solid var(--line);
+      padding: 6px 12px; border-radius: 4px; cursor: pointer; font: inherit;
+    }
+    button:hover { border-color: var(--c); }
+    .meta { color: var(--muted); }
+    .meta strong { color: var(--ink); font-weight: 600; }
+    main { max-width: 860px; margin: 0 auto; padding: 22px 18px 80px; }
+    .topic { font-size: 17px; margin: 0 0 18px; }
+    .empty { color: var(--muted); padding: 40px 8px; }
+    .empty code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--c); font-size: 12px; }
+    .row { display: flex; margin: 10px 0; }
+    .row.a { justify-content: flex-start; }
+    .row.b { justify-content: flex-end; }
+    .row.caesar { justify-content: center; }
+    .bubble {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #1b2029;
+      border: 1px solid var(--line);
+    }
+    .row.a .bubble { border-left: 3px solid var(--a); }
+    .row.b .bubble { border-right: 3px solid var(--b); }
+    .row.caesar .bubble {
+      max-width: 92%;
+      background: #1a1810;
+      border-color: #3a3420;
+      font-size: 13px;
+      color: var(--c);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    .who { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; font-family: ui-sans-serif, system-ui, sans-serif; color: var(--muted); }
+    .row.a .who { color: var(--a); }
+    .row.b .who { color: var(--b); }
+    .row.caesar .who { color: var(--c); }
+    .txt { white-space: pre-wrap; }
+    .drawer {
+      position: fixed; right: 0; top: 0; bottom: 0; width: min(420px, 100%);
+      background: var(--bg-2); border-left: 1px solid var(--line);
+      transform: translateX(100%); transition: transform 0.2s ease;
+      overflow: auto; padding: 16px 18px 40px;
+      font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12px;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 { margin: 8px 0 12px; font-size: 14px; color: var(--c); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 5px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 500; }
+    .pill { display: inline-block; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--line); }
+    .err { color: var(--bad); padding: 12px 22px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><span>Caesar</span> — two models, one overlooker</h1>
+    <p>Replay a match trace. No API key lives in this page. Stats hide in the drawer.</p>
+  </header>
+  <div class="bar">
+    <label>Replay JSON <input id="file" type="file" accept="application/json,.json" /></label>
+    <button type="button" id="toggle">Stats drawer</button>
+    <span class="meta" id="meta"></span>
+  </div>
+  <div class="err" id="err" hidden></div>
+  <main id="main">
+    <div class="empty">
+      <p>This is a transcript, not a dashboard.</p>
+      <p>Generate a replay, then open the file:</p>
+      <p><code>python -m caesar.harness</code></p>
+      <p>then choose <code>results/caesar/&lt;id&gt;.json</code>.</p>
+    </div>
+  </main>
+  <aside class="drawer" id="drawer" hidden></aside>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function label(speaker) {
+      if (speaker === "a") return "Model A";
+      if (speaker === "b") return "Model B";
+      return "Caesar";
+    }
+    function showError(msg) {
+      const el = $("err");
+      el.hidden = !msg;
+      el.textContent = msg || "";
+    }
+    function render(match) {
+      showError("");
+      const main = $("main");
+      const topic = match.topic || "";
+      const turns = match.turns || [];
+      main.innerHTML = "";
+      const h = document.createElement("p");
+      h.className = "topic";
+      h.textContent = topic;
+      main.appendChild(h);
+      for (const t of turns) {
+        const row = document.createElement("div");
+        const sp = t.speaker === "a" || t.speaker === "b" ? t.speaker : "caesar";
+        row.className = "row " + sp;
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        const who = document.createElement("div");
+        who.className = "who";
+        who.textContent = label(sp) + (t.model ? " · " + t.model : "");
+        const txt = document.createElement("div");
+        txt.className = "txt";
+        txt.textContent = t.text || "";
+        bubble.appendChild(who);
+        bubble.appendChild(txt);
+        row.appendChild(bubble);
+        main.appendChild(row);
+      }
+      $("meta").innerHTML =
+        "<strong>" + (match.end || "") + "</strong> · winner " +
+        (match.winner || "tie") + " · " + (match.rounds || "?") + " rounds · cost " +
+        (match.total_cost_usd ?? 0);
+      const drawer = $("drawer");
+      drawer.hidden = false;
+      const debaters = turns.filter((t) => t.role === "debater" || t.speaker === "a" || t.speaker === "b");
+      let rows = "";
+      for (const t of turns) {
+        if (t.speaker === "caesar") continue;
+        rows += "<tr>" +
+          "<td>" + label(t.speaker) + "</td>" +
+          "<td>" + (t.latency_ms ?? "") + "</td>" +
+          "<td>" + (t.cost_usd ?? "") + "</td>" +
+          "<td>" + (t.points ?? "") + "</td>" +
+          "<td>" + (t.grounding ?? "") + "</td>" +
+          "<td>" + (t.searched ? "yes" : "") + "</td>" +
+          "<td>" + (t.concession ? "yes" : "") + "</td>" +
+          "<td>" + ((t.claims || []).join("; ")) + "</td>" +
+          "</tr>";
+      }
+      drawer.innerHTML =
+        "<h2>Dense stats</h2>" +
+        "<p>A <span class='pill'>" + (match.model_a || "") + "</span> vs B " +
+        "<span class='pill'>" + (match.model_b || "") + "</span><br>Caesar " +
+        "<span class='pill'>" + (match.caesar_model || "") + "</span></p>" +
+        "<p>scores A " + ((match.scores || {}).a ?? "?") +
+        " – B " + ((match.scores || {}).b ?? "?") +
+        "<br>" + (match.reason || "") + "</p>" +
+        "<table><thead><tr><th>who</th><th>ms</th><th>cost</th><th>pts</th><th>ground</th><th>search</th><th>concede</th><th>claims</th></tr></thead><tbody>" +
+        rows + "</tbody></table>";
+    }
+    $("file").addEventListener("change", (ev) => {
+      const file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const match = JSON.parse(String(reader.result));
+          render(match);
+        } catch (e) {
+          showError("Not a JSON trace: " + e);
+        }
+      };
+      reader.readAsText(file);
+    });
+    $("toggle").addEventListener("click", () => {
+      $("drawer").classList.toggle("open");
+    });
+    document.addEventListener("dragover", (e) => e.preventDefault());
+    document.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try { render(JSON.parse(String(reader.result))); }
+        catch (err) { showError("Not a JSON trace: " + err); }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
