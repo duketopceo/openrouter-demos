@@ -605,6 +605,18 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self._send_json({"all": [], "curated": []})
             return
+        elif self.path == "/api/caesar-traces":
+            caesar_dir = REPO_DIR / "results" / "caesar"
+            traces = []
+            if caesar_dir.exists():
+                for p in sorted(caesar_dir.glob("*.json"), key=lambda x: x.stat().st_mtime, reverse=True):
+                    traces.append({
+                        "id": p.stem,
+                        "path": f"/results/caesar/{p.name}",
+                        "time": time.strftime("%H:%M:%S", time.localtime(p.stat().st_mtime))
+                    })
+            self._send_json(traces)
+            return
         elif self.path == "/api/key":
             file_env = load_env_file()
             key = os.environ.get("OPENROUTER_API_KEY") or file_env.get("OPENROUTER_API_KEY", "")

@@ -91,7 +91,8 @@
     <p>Replay a match trace. No API key lives in this page. Stats hide in the drawer.</p>
   </header>
   <div class="bar">
-    <label>Replay JSON <input id="file" type="file" accept="application/json,.json" /></label>
+    <label>Select Trace: <select id="trace-select" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px;"><option value="">Loading traces...</option></select></label>
+    <label>Or JSON File: <input id="file" type="file" accept="application/json,.json" /></label>
     <button type="button" id="toggle">Stats drawer</button>
     <span class="meta" id="meta"></span>
   </div>
@@ -176,6 +177,45 @@
         "<table><thead><tr><th>who</th><th>ms</th><th>cost</th><th>pts</th><th>ground</th><th>search</th><th>concede</th><th>claims</th></tr></thead><tbody>" +
         rows + "</tbody></table>";
     }
+    async function loadTracesList() {
+      try {
+        const res = await fetch("/api/caesar-traces");
+        if (res.ok) {
+          const traces = await res.json();
+          const sel = $("trace-select");
+          sel.innerHTML = "";
+          traces.forEach((t, i) => {
+            const opt = document.createElement("option");
+            opt.value = t.path;
+            opt.textContent = `${t.id} (${t.time})`;
+            if (i === 0) opt.selected = true;
+            sel.appendChild(opt);
+          });
+          if (traces.length > 0) {
+            loadTraceFile(traces[0].path);
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function loadTraceFile(url) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const match = await res.json();
+          render(match);
+        }
+      } catch(e) {
+        showError("Failed to load trace: " + e);
+      }
+    }
+
+    $("trace-select").addEventListener("change", (e) => {
+      if (e.target.value) loadTraceFile(e.target.value);
+    });
+
+    loadTracesList();
+
     $("file").addEventListener("change", (ev) => {
       const file = ev.target.files && ev.target.files[0];
       if (!file) return;
