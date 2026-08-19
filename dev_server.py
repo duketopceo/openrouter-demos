@@ -155,9 +155,38 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       padding: 20px;
       margin-bottom: 24px;
     }
+    .env-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
     .env-section h3 {
-      margin: 0 0 8px;
+      margin: 0;
       color: var(--heading);
+    }
+    .toggle-bar {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 4px;
+    }
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #21262d;
+      color: var(--accent);
+      border: 1px solid var(--border);
     }
     .env-section p {
       margin: 0 0 12px;
@@ -170,7 +199,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       align-items: center;
       flex-wrap: wrap;
     }
-    input[type=password], input[type=text], select {
+    input[type=password], input[type=text] {
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
@@ -178,19 +207,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       border-radius: 6px;
       font-family: inherit;
       font-size: 13px;
-    }
-    select {
-      min-width: 280px;
-      cursor: pointer;
-    }
-    select optgroup {
-      background: var(--panel);
-      color: var(--accent);
-      font-weight: bold;
-    }
-    select option {
-      background: var(--bg);
-      color: var(--text);
     }
     .model-selector-row {
       display: flex;
@@ -282,8 +298,14 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   </header>
   <main>
     <div class="env-section">
-      <h3>OpenRouter Settings & Curated Model Selector</h3>
-      <p>Select from open-weight (NVIDIA Nemotron, Llama, Mistral) and frontier/flash models. China-hosted models excluded.</p>
+      <div class="env-section-header">
+        <h3>OpenRouter Settings & Model Selector</h3>
+        <div class="toggle-bar">
+          <button id="toggle-curated" class="toggle-btn active" onclick="setCatalogFilter('curated')">Curated Heavy Hitters (32)</button>
+          <button id="toggle-all" class="toggle-btn" onclick="setCatalogFilter('all')">All Models (415)</button>
+        </div>
+      </div>
+      <p id="filter-desc">Filtered to essential open-weight heavyweights (Nemotron, Llama 3.3, Mistral, Phi-4, Solar) & top frontier models per provider.</p>
       <div class="form-group">
         <input type="password" id="api-key" style="flex-grow:1" placeholder="sk-or-v1-..." />
         <button class="btn btn-secondary" onclick="saveConfig()">Save Settings to .env</button>
@@ -362,6 +384,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   </main>
 
   <script>
+    let rawModelsData = { all: [], curated: [] };
+    let currentFilter = "curated";
+
     loadModelsList();
 
     function logAppend(text, type = "info") {
@@ -386,22 +411,38 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     async function loadModelsList() {
       try {
         const res = await fetch("/api/models");
-        const models = await res.json();
-        
-        const datalist = document.getElementById("models-list");
-        datalist.innerHTML = "";
-
-        models.forEach(m => {
-          const opt = document.createElement("option");
-          opt.value = m.id;
-          opt.label = m.name;
-          datalist.appendChild(opt);
-        });
-
+        rawModelsData = await res.json();
+        renderDatalist();
         checkEnvStatus();
       } catch(e) {
         logAppend("Failed to load models list: " + e, "error");
       }
+    }
+
+    function setCatalogFilter(filter) {
+      currentFilter = filter;
+      document.getElementById("toggle-curated").classList.toggle("active", filter === "curated");
+      document.getElementById("toggle-all").classList.toggle("active", filter === "all");
+      
+      const desc = document.getElementById("filter-desc");
+      if (filter === "curated") {
+        desc.textContent = "Filtered to essential open-weight heavyweights (Nemotron, Llama 3.3, Mistral, Phi-4, Solar) & top 3-4 frontier models per provider.";
+      } else {
+        desc.textContent = "Showing all 415 available models on OpenRouter.";
+      }
+      renderDatalist();
+    }
+
+    function renderDatalist() {
+      const datalist = document.getElementById("models-list");
+      datalist.innerHTML = "";
+      const models = currentFilter === "curated" ? (rawModelsData.curated || []) : (rawModelsData.all || []);
+      models.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.label = m.name;
+        datalist.appendChild(opt);
+      });
     }
 
     async function checkEnvStatus() {
@@ -431,9 +472,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
     async function saveConfig() {
       const keyVal = document.getElementById("api-key").value.trim();
-      const primary = document.getElementById("model-primary").value;
-      const modelA = document.getElementById("model-a").value;
-      const modelB = document.getElementById("model-b").value;
+      const primary = document.getElementById("model-primary").value.trim();
+      const modelA = document.getElementById("model-a").value.trim();
+      const modelB = document.getElementById("model-b").value.trim();
 
       try {
         const res = await fetch("/api/key", {
@@ -562,7 +603,7 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(models_file.read_bytes())
             else:
-                self._send_json([])
+                self._send_json({"all": [], "curated": []})
             return
         elif self.path == "/api/key":
             file_env = load_env_file()
