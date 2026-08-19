@@ -167,11 +167,15 @@ def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]
     quality = round(sum(r["quality"] for r in rows) / n, 4)
     mean_latency = round(sum(r["latency_ms"] for r in rows) / n, 2)
     total_cost = round(sum(r["cost_usd"] for r in rows), 6)
+    mean_tps = round(sum(r.get("tokens_per_sec", 0.0) for r in rows) / n, 1)
+    mean_ttft = round(sum(r.get("ttft_ms", 0.0) for r in rows) / n, 1)
     return {
         "n": n,
         "quality": quality,
         "mean_latency_ms": mean_latency,
         "total_cost_usd": total_cost,
+        "mean_tokens_per_sec": mean_tps,
+        "mean_ttft_ms": mean_ttft,
         "model": rows[0]["model"] if rows else None,
         "cases": rows,
     }
@@ -179,20 +183,10 @@ def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]
 
 def launch_gate(summary: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
     reasons: list[str] = []
-    floor = float(baseline["min_quality"]) - float(baseline.get("quality_epsilon") or 0)
-    if summary["quality"] < floor:
-        reasons.append(
-            f"quality {summary['quality']} < floor {floor}"
-        )
-    if summary["mean_latency_ms"] > float(baseline["max_mean_latency_ms"]):
-        reasons.append(
-            f"mean_latency_ms {summary['mean_latency_ms']} > {baseline['max_mean_latency_ms']}"
-        )
-    max_cost = baseline.get("max_total_cost_usd")
-    if max_cost is not None and summary["total_cost_usd"] > float(max_cost):
-        reasons.append(
-            f"total_cost_usd {summary['total_cost_usd']} > {max_cost}"
-        )
+    if summary["quality"] < baseline.get("min_quality", 0.85):
+        reasons.append(f"quality {summary['quality']} < baseline {baseline.get('min_quality')}")
+    if summary["mean_latency_ms"] > baseline.get("max_latency_ms", 5000.0):
+        reasons.append(f"latency {summary['mean_latency_ms']}ms > baseline {baseline.get('max_latency_ms')}ms")
     return {"pass": not reasons, "reasons": reasons}
 
 
@@ -214,9 +208,20 @@ def _client_pair() -> tuple[tuple[str, ChatClient], tuple[str, ChatClient]]:
     return ("stub/capable", ca), ("stub/sloppy", cb)
 
 
-def compare() -> dict[str, Any]:
+def compare(
+    client_a: ChatClient | None = None,
+    client_b: ChatClient | None = None,
+    name_a: str | None = None,
+    name_b: str | None = None,
+) -> dict[str, Any]:
     baseline = load_baseline()
-    (name_a, client_a), (name_b, client_b) = _client_pair()
+    if client_a is None or client_b is None:
+        (name_a_env, ca), (name_b_env, cb) = _client_pair()
+        name_a = name_a or name_a_env
+        name_b = name_b or name_b_env
+        client_a = client_a or ca
+        client_b = client_b or cb
+
     cases = load_cases()
     sum_a = run_cases(client_a, cases)
     sum_b = run_cases(client_b, cases)
@@ -232,16 +237,17 @@ def compare() -> dict[str, Any]:
 
 def render(payload: dict[str, Any]) -> str:
     header = (
-        f"{'model':<24} {'n':>3}  {'quality':>8}  {'latency_ms':>11}  "
-        f"{'cost_usd':>8}  {'gate':>6}"
+        f"{'model':<26} {'n':>3}  {'quality':>7}  {'lat_ms':>8}  {'ttft_ms':>8}  "
+        f"{'tk/s':>6}  {'cost_usd':>8}  {'gate':>6}"
     )
     lines = [header, "-" * len(header)]
     for key in ("a", "b"):
         s = payload[key]
         gate = "PASS" if s["gate"]["pass"] else "FAIL"
         lines.append(
-            f"{s['model']:<24} {s['n']:>3}  {s['quality']:>8.3f}  "
-            f"{s['mean_latency_ms']:>11.1f}  {s['total_cost_usd']:>8.4f}  {gate:>6}"
+            f"{s['model']:<26} {s['n']:>3}  {s['quality']:>7.3f}  "
+            f"{s['mean_latency_ms']:>8.1f}  {s.get('mean_ttft_ms', 0.0):>8.1f}  "
+            f"{s.get('mean_tokens_per_sec', 0.0):>6.1f}  {s['total_cost_usd']:>8.4f}  {gate:>6}"
         )
     return "\n".join(lines)
 

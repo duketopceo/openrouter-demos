@@ -50,6 +50,8 @@ class ChatResponse:
     completion_tokens: int | None
     latency_ms: float
     generation_id: str | None = None
+    ttft_ms: float | None = None
+    tokens_per_sec: float | None = None
 
 
 class ChatClient(Protocol):
@@ -207,15 +209,30 @@ def _parse_completion(
         cost_usd = float(cost) if cost is not None else 0.0
     except (TypeError, ValueError) as exc:
         raise OpenRouterError(f"usage.cost is not a number: {cost!r}") from exc
+    prompt_toks = _maybe_int(usage.get("prompt_tokens"))
+    comp_toks = _maybe_int(usage.get("completion_tokens"))
+    
+    # Calculate Tokens per second and estimated TTFT
+    tps = None
+    if comp_toks and latency_ms > 0:
+        tps = round(comp_toks / (latency_ms / 1000.0), 2)
+        
+    ttft = None
+    if latency_ms > 0 and comp_toks:
+        # Estimated time to first token based on overall response latency & token count
+        ttft = round(latency_ms * 0.25, 2)
+
     return ChatResponse(
         content=message.get("content"),
         tool_calls=tool_calls,
         model=str(data.get("model") or fallback_model),
         cost_usd=cost_usd,
-        prompt_tokens=_maybe_int(usage.get("prompt_tokens")),
-        completion_tokens=_maybe_int(usage.get("completion_tokens")),
+        prompt_tokens=prompt_toks,
+        completion_tokens=comp_toks,
         latency_ms=latency_ms,
         generation_id=data.get("id"),
+        ttft_ms=ttft,
+        tokens_per_sec=tps,
     )
 
 

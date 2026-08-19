@@ -210,6 +210,41 @@
     "provider": "Baidu"
   },
   {
+    "id": "bytedance/ui-tars-1.5-7b",
+    "name": "Bytedance \u2014 ByteDance: UI-TARS 7B ",
+    "provider": "Bytedance"
+  },
+  {
+    "id": "bytedance-seed/seed-1.6",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed 1.6",
+    "provider": "Bytedance-seed"
+  },
+  {
+    "id": "bytedance-seed/seed-1.6-flash",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed 1.6 Flash",
+    "provider": "Bytedance-seed"
+  },
+  {
+    "id": "bytedance-seed/seed-2-1-turbo",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed 2.1 Turbo",
+    "provider": "Bytedance-seed"
+  },
+  {
+    "id": "bytedance-seed/seed-2.0-code",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed-2.0-Code",
+    "provider": "Bytedance-seed"
+  },
+  {
+    "id": "bytedance-seed/seed-2.0-lite",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed-2.0-Lite",
+    "provider": "Bytedance-seed"
+  },
+  {
+    "id": "bytedance-seed/seed-2.0-mini",
+    "name": "Bytedance-seed \u2014 ByteDance Seed: Seed-2.0-Mini",
+    "provider": "Bytedance-seed"
+  },
+  {
     "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition",
     "name": "Cognitivecomputations \u2014 Venice: Uncensored",
     "provider": "Cognitivecomputations"
@@ -243,6 +278,71 @@
     "id": "deepcogito/cogito-v2.1-671b",
     "name": "Deepcogito \u2014 Deep Cogito: Cogito v2.1 671B",
     "provider": "Deepcogito"
+  },
+  {
+    "id": "deepseek/deepseek-chat",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-chat-v3-0324",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3 0324",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-chat-v3.1",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3.1",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v3.1-terminus",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3.1 Terminus",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v3.2",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3.2",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v3.2-exp",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V3.2 Exp",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v4-flash",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V4 Flash 0423",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v4-flash-0731",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V4 Flash 0731",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v4-pro",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V4 Pro 0423",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-v4-pro-0813",
+    "name": "Deepseek \u2014 DeepSeek: DeepSeek V4 Pro 0813",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-r1",
+    "name": "Deepseek \u2014 DeepSeek: R1",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-r1-0528",
+    "name": "Deepseek \u2014 DeepSeek: R1 0528",
+    "provider": "Deepseek"
+  },
+  {
+    "id": "deepseek/deepseek-r1-distill-llama-70b",
+    "name": "Deepseek \u2014 DeepSeek: R1 Distill Llama 70B",
+    "provider": "Deepseek"
   },
   {
     "id": "dots-studio/dots-3-note-preview:free",
@@ -1415,6 +1515,261 @@
     "provider": "Poolside"
   },
   {
+    "id": "qwen/qwen-2.5-72b-instruct",
+    "name": "Qwen \u2014 Qwen2.5 72B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen-2.5-coder-32b-instruct",
+    "name": "Qwen \u2014 Qwen2.5 Coder 32B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen-plus-2025-07-28",
+    "name": "Qwen \u2014 Qwen: Qwen Plus 0728",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen-plus-2025-07-28:thinking",
+    "name": "Qwen \u2014 Qwen: Qwen Plus 0728 (thinking)",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen-plus",
+    "name": "Qwen \u2014 Qwen: Qwen-Plus",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen-2.5-7b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen2.5 7B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen2.5-vl-72b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen2.5 VL 72B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-14b",
+    "name": "Qwen \u2014 Qwen: Qwen3 14B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-235b-a22b",
+    "name": "Qwen \u2014 Qwen: Qwen3 235B A22B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-235b-a22b-2507",
+    "name": "Qwen \u2014 Qwen: Qwen3 235B A22B Instruct 2507",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-235b-a22b-thinking-2507",
+    "name": "Qwen \u2014 Qwen: Qwen3 235B A22B Thinking 2507",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-30b-a3b",
+    "name": "Qwen \u2014 Qwen: Qwen3 30B A3B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-30b-a3b-instruct-2507",
+    "name": "Qwen \u2014 Qwen: Qwen3 30B A3B Instruct 2507",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-30b-a3b-thinking-2507",
+    "name": "Qwen \u2014 Qwen: Qwen3 30B A3B Thinking 2507",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-32b",
+    "name": "Qwen \u2014 Qwen: Qwen3 32B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-8b",
+    "name": "Qwen \u2014 Qwen: Qwen3 8B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-coder-30b-a3b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 Coder 30B A3B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-coder",
+    "name": "Qwen \u2014 Qwen: Qwen3 Coder 480B A35B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-coder-flash",
+    "name": "Qwen \u2014 Qwen: Qwen3 Coder Flash",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-coder-next",
+    "name": "Qwen \u2014 Qwen: Qwen3 Coder Next",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-coder-plus",
+    "name": "Qwen \u2014 Qwen: Qwen3 Coder Plus",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-max",
+    "name": "Qwen \u2014 Qwen: Qwen3 Max",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-max-thinking",
+    "name": "Qwen \u2014 Qwen: Qwen3 Max Thinking",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-next-80b-a3b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 Next 80B A3B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-next-80b-a3b-thinking",
+    "name": "Qwen \u2014 Qwen: Qwen3 Next 80B A3B Thinking",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 235B A22B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-235b-a22b-thinking",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 235B A22B Thinking",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-30b-a3b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 30B A3B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-30b-a3b-thinking",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 30B A3B Thinking",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-32b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 32B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-8b-instruct",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 8B Instruct",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3-vl-8b-thinking",
+    "name": "Qwen \u2014 Qwen: Qwen3 VL 8B Thinking",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-397b-a17b",
+    "name": "Qwen \u2014 Qwen: Qwen3.5 397B A17B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-plus-02-15",
+    "name": "Qwen \u2014 Qwen: Qwen3.5 Plus 2026-02-15",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-plus-20260420",
+    "name": "Qwen \u2014 Qwen: Qwen3.5 Plus 2026-04-20",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-122b-a10b",
+    "name": "Qwen \u2014 Qwen: Qwen3.5-122B-A10B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-27b",
+    "name": "Qwen \u2014 Qwen: Qwen3.5-27B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-35b-a3b",
+    "name": "Qwen \u2014 Qwen: Qwen3.5-35B-A3B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-9b",
+    "name": "Qwen \u2014 Qwen: Qwen3.5-9B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.5-flash-02-23",
+    "name": "Qwen \u2014 Qwen: Qwen3.5-Flash",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.6-27b",
+    "name": "Qwen \u2014 Qwen: Qwen3.6 27B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "name": "Qwen \u2014 Qwen: Qwen3.6 35B A3B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.6-flash",
+    "name": "Qwen \u2014 Qwen: Qwen3.6 Flash",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.6-max-preview",
+    "name": "Qwen \u2014 Qwen: Qwen3.6 Max Preview",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.6-plus",
+    "name": "Qwen \u2014 Qwen: Qwen3.6 Plus",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.7-flash",
+    "name": "Qwen \u2014 Qwen: Qwen3.7 Flash",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.7-max",
+    "name": "Qwen \u2014 Qwen: Qwen3.7 Max",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.7-plus",
+    "name": "Qwen \u2014 Qwen: Qwen3.7 Plus",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.8-2.4t-a95b",
+    "name": "Qwen \u2014 Qwen: Qwen3.8 2.4T A95B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.8-27b",
+    "name": "Qwen \u2014 Qwen: Qwen3.8 27B",
+    "provider": "Qwen"
+  },
+  {
+    "id": "qwen/qwen3.8-max",
+    "name": "Qwen \u2014 Qwen: Qwen3.8 Max",
+    "provider": "Qwen"
+  },
+  {
     "id": "rekaai/reka-edge",
     "name": "Rekaai \u2014 Reka Edge",
     "provider": "Rekaai"
@@ -1458,6 +1813,16 @@
     "id": "sao10k/l3.3-euryale-70b",
     "name": "Sao10k \u2014 Sao10K: Llama 3.3 Euryale 70B",
     "provider": "Sao10k"
+  },
+  {
+    "id": "stepfun/step-3.5-flash",
+    "name": "Stepfun \u2014 StepFun: Step 3.5 Flash",
+    "provider": "Stepfun"
+  },
+  {
+    "id": "stepfun/step-3.7-flash",
+    "name": "Stepfun \u2014 StepFun: Step 3.7 Flash",
+    "provider": "Stepfun"
   },
   {
     "id": "tencent/hunyuan-a13b-instruct",
@@ -1568,6 +1933,81 @@
     "id": "xiaomi/mimo-v2.5-pro",
     "name": "Xiaomi \u2014 Xiaomi: MiMo-V2.5-Pro",
     "provider": "Xiaomi"
+  },
+  {
+    "id": "z-ai/glm-4.5",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.5",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.5-air",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.5 Air",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.5v",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.5V",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.6",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.6",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.6v",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.6V",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.7",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.7",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-4.7-flash",
+    "name": "Z-ai \u2014 Z.ai: GLM 4.7 Flash",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5",
+    "name": "Z-ai \u2014 Z.ai: GLM 5",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5-turbo",
+    "name": "Z-ai \u2014 Z.ai: GLM 5 Turbo",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5.1",
+    "name": "Z-ai \u2014 Z.ai: GLM 5.1",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5.2",
+    "name": "Z-ai \u2014 Z.ai: GLM 5.2",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5.2:batch",
+    "name": "Z-ai \u2014 Z.ai: GLM 5.2 (batch)",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5.2:free",
+    "name": "Z-ai \u2014 Z.ai: GLM 5.2 (free)",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5.3",
+    "name": "Z-ai \u2014 Z.ai: GLM 5.3",
+    "provider": "Z-ai"
+  },
+  {
+    "id": "z-ai/glm-5v-turbo",
+    "name": "Z-ai \u2014 Z.ai: GLM 5V Turbo",
+    "provider": "Z-ai"
   },
   {
     "id": "~anthropic/claude-haiku-latest",
