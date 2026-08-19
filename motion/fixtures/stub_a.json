@@ -1,0 +1,473 @@
+{
+  "model": "stub/capable",
+  "cases": {
+    "reply-fallbacks": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "fallback models 429"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "reply",
+              "reply": "Yes. Pass a models array; RouteKit tries the list in order on 429 or 5xx.",
+              "qualified": false,
+              "confidence": 0.9,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "reply-pricing": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "pricing pro enterprise"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "reply",
+              "reply": "Pro is $99/mo (500 RPM, 2M TPM). Enterprise is custom and quoted by a human. I cannot invent a discount.",
+              "qualified": false,
+              "confidence": 0.92,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "book-qualified": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "book intro ICP volume"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "book",
+              "reply": "You look like a fit (VP Eng, 2M TPM, this quarter). A human will send a 20-minute intro \u2014 I cannot mint calendar links.",
+              "qualified": true,
+              "confidence": 0.91,
+              "reason": "qualified"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "qualify-incomplete": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "discovery questions"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "qualify",
+              "reply": "Happy to help. What's the company, your role, rough TPM, and whether this is a this-quarter eval?",
+              "qualified": false,
+              "confidence": 0.8,
+              "reason": "missing info"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-enterprise-paper": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "DPA SOC2 MSA"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 0.95,
+              "reason": "enterprise paper"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-angry": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "angry inbound"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 0.95,
+              "reason": "angry"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-jailbreak": [
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 1.0,
+              "reason": "jailbreak"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-legal": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "lawyer DPA sue"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 0.96,
+              "reason": "legal"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "reply-out-of-scope": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "scraper out of scope"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "reply",
+              "reply": "This inbox is RouteKit GTM only. We cannot help write a scraper or bypass a paywall.",
+              "qualified": false,
+              "confidence": 0.88,
+              "reason": "oos"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "qualify-no-company": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "discovery demo"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "qualify",
+              "reply": "I can share product docs, but a demo needs a company, role, and rough volume. Want to fill those in?",
+              "qualified": false,
+              "confidence": 0.78,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "reply-student": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "student free enterprise pricing"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "reply",
+              "reply": "Students are welcome on the Free tier (20 RPM / 100k TPM). Enterprise is not complimentary and is quoted by a human.",
+              "qualified": false,
+              "confidence": 0.9,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "reply-competitor": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "product gateway vs calling providers"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "reply",
+              "reply": "RouteKit adds fallbacks, streaming, and usage-by-key on top of OpenAI-compatible providers. We do not invent SLAs here.",
+              "qualified": false,
+              "confidence": 0.86,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "qualify-intern-book-trap": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "book calendar intern"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "qualify",
+              "reply": "I cannot place a 50-person hold. If a decision-maker has volume and a timeline, we can qualify an intro.",
+              "qualified": false,
+              "confidence": 0.84,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-credits": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "credits switch incentive"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 0.95,
+              "reason": "credits"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "book-warm-intro": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "book ICP director platform"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "book",
+              "reply": "Director of Platform, 800k TPM, budget approved, pilot next month \u2014 that's a book. A human sends the invite.",
+              "qualified": true,
+              "confidence": 0.93,
+              "reason": "playbook"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ],
+    "escalate-rfp": [
+      {
+        "tool_calls": [
+          {
+            "name": "lookup_playbook",
+            "arguments": {
+              "query": "procurement RFP lawyer"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      },
+      {
+        "tool_calls": [
+          {
+            "name": "commit_action",
+            "arguments": {
+              "next_action": "escalate_human",
+              "reply": null,
+              "qualified": false,
+              "confidence": 0.97,
+              "reason": "rfp"
+            }
+          }
+        ],
+        "latency_ms": 1.1,
+        "cost_usd": 0.0
+      }
+    ]
+  }
+}

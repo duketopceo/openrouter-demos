@@ -1,0 +1,7 @@
+{
+  "source": "stub/capable offline fixture \u2014 replace after a blessed live bakeoff",
+  "min_quality": 0.9,
+  "max_mean_latency_ms": 15000,
+  "max_total_cost_usd": 1.0,
+  "quality_epsilon": 0.05
+}
