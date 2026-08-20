@@ -11,6 +11,7 @@ from typing import Any
 from motion.agent import MotionAgent, MotionResult
 from src.guardrails import PAPER_RE, WEAK_AUTHORITY_RE, reply_violations, ticket_signals
 from src.openrouter import ChatClient, OpenRouterClient, StubClient, load_dotenv
+from src.progress import EvalProgress
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES_PATH = Path(__file__).resolve().parent / "cases.jsonl"
@@ -113,13 +114,17 @@ def run_eval(
     agent = MotionAgent(client)
     rows: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    progress = EvalProgress("motion", len(cases))
     for case in cases:
         try:
             result = agent.run(case["note"], case_id=case["id"])
         except Exception as exc:
             errors.append({"id": case["id"], "error": f"{type(exc).__name__}: {exc}"})
+            progress.advance(case["id"], ok=False)
             continue
         rows.append(score_case(case, result))
+        progress.advance(case["id"], ok=True)
+    progress.finish()
     if errors:
         detail = "; ".join(f"{e['id']}: {e['error']}" for e in errors)
         raise RuntimeError(f"{len(errors)} case(s) failed: {detail}")
