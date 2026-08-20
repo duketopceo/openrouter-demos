@@ -1,0 +1,121 @@
+{
+  "id": "tools-vs-prose",
+  "topic": "Should RouteKit support agents be required to call allowlisted tools, or is freeform prose enough?",
+  "side_a": "Allowlisted tools plus policy finalize. Freeform is untrusted.",
+  "side_b": "A well-written freeform reply is enough; tools are ceremony.",
+  "model_a": "stub/capable-a",
+  "model_b": "stub/capable-b",
+  "caesar_model": "stub/caesar",
+  "end": "concession",
+  "winner": "a",
+  "reason": "B conceded that freeform is untrusted.",
+  "scores": {
+    "a": 2,
+    "b": 0
+  },
+  "rounds": 1,
+  "max_rounds": 2,
+  "conceded_by": "b",
+  "total_cost_usd": 0.0,
+  "total_latency_ms": 9.0,
+  "wall_ms": 0.15,
+  "flags": [],
+  "turns": [
+    {
+      "round": 1,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "Freeform is untrusted. RouteKit agents must call allowlisted tools; policy still runs after. A pretty paragraph is not an action.",
+      "latency_ms": 4.0,
+      "prompt_tokens": 160,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 129,
+      "searched": true,
+      "info_gathered": [
+        "tools.allowlist"
+      ],
+      "claims": [
+        "allowlisted tools; freeform untrusted"
+      ],
+      "points": 2,
+      "grounding": 0.9,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.90. A cited the allowlist rule.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 65,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "allowlisted tools; freeform untrusted"
+      ],
+      "points": 0,
+      "grounding": 0.9,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    },
+    {
+      "round": 1,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "A well-written reply should be enough. Fine \u2014 I concede: freeform is untrusted and allowlisted tools are the contract.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 118,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "pretty prose should suffice"
+      ],
+      "points": 0,
+      "grounding": 0.88,
+      "concession": true
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: B. grounding=0.88. B conceded that freeform is untrusted.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 76,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "allowlisted tools; freeform untrusted",
+        "pretty prose should suffice"
+      ],
+      "points": 0,
+      "grounding": 0.88,
+      "concession": true,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    }
+  ],
+  "caesar_system_chars": 995
+}

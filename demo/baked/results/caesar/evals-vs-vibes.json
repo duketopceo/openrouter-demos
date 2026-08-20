@@ -1,0 +1,166 @@
+{
+  "id": "evals-vs-vibes",
+  "topic": "For RouteKit model launches, should the gate be structured evals or 'it felt good in the demo'?",
+  "side_a": "Vibes and a polished demo are enough to ship a model.",
+  "side_b": "Structured evals (rubrics, labeled cases) are the launch gate; vibes are not.",
+  "model_a": "stub/capable-a",
+  "model_b": "stub/capable-b",
+  "caesar_model": "stub/caesar",
+  "end": "concession",
+  "winner": "b",
+  "reason": "A conceded that structured evals beat vibes.",
+  "scores": {
+    "a": 0,
+    "b": 2
+  },
+  "rounds": 2,
+  "max_rounds": 2,
+  "conceded_by": "a",
+  "total_cost_usd": 0.0,
+  "total_latency_ms": 10.5,
+  "wall_ms": 0.12,
+  "flags": [],
+  "turns": [
+    {
+      "round": 1,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "If the demo felt right, ship it. Structured evals are a delay tactic. Vibes from a good operator beat a rubric.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 111,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "demo vibes are enough to ship"
+      ],
+      "points": 0,
+      "grounding": 0.35,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 0 \u2013 B 0. Latest: A. grounding=0.35. A argued vibes; ungrounded against the eval brief.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 88,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "demo vibes are enough to ship"
+      ],
+      "points": 0,
+      "grounding": 0.35,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "b",
+      "scores": {
+        "a": 0,
+        "b": 0
+      }
+    },
+    {
+      "round": 1,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "Labeled cases and rubric checks are the only reproducible launch gate. A polished demo can hide schema drift.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 109,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "rubric checks are the launch gate"
+      ],
+      "points": 2,
+      "grounding": 0.91,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 0 \u2013 B 2. Latest: B. grounding=0.91. B grounded the launch-gate claim.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 71,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "demo vibes are enough to ship",
+        "rubric checks are the launch gate"
+      ],
+      "points": 0,
+      "grounding": 0.91,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "b",
+      "scores": {
+        "a": 0,
+        "b": 2
+      }
+    },
+    {
+      "round": 2,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "I concede: a launch gate on structured evals beats shipping on vibes. Rubric checks catch schema drift a demo will hide.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 120,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "demo vibes are enough to ship"
+      ],
+      "points": 0,
+      "grounding": 0.94,
+      "concession": true
+    },
+    {
+      "round": 2,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 0 \u2013 B 2. Latest: A. grounding=0.94. A conceded that structured evals beat vibes.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 82,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "demo vibes are enough to ship",
+        "rubric checks are the launch gate"
+      ],
+      "points": 0,
+      "grounding": 0.94,
+      "concession": true,
+      "flags": [],
+      "winner_so_far": "b",
+      "scores": {
+        "a": 0,
+        "b": 2
+      }
+    }
+  ],
+  "caesar_system_chars": 995
+}

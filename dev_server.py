@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 
 from caesar.topics import TOPIC_PRESETS, list_presets
+from src.baked_demo import is_baked_available, load_manifest, stream_baked_replay
 from src.dev_stream import run_caesar_live, sse_event, stream_subprocess
 
 PORT = 8080
@@ -313,7 +314,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="form-group">
         <input type="password" id="api-key" style="flex-grow:1" placeholder="sk-or-v1-..." />
         <button class="btn btn-secondary" onclick="saveConfig()">Save Settings to .env</button>
-        <button class="btn" id="btn-run-all" style="background: var(--green); color: white;" onclick="runAllDemos()">Run All Live Demos</button>
+        <button class="btn" id="btn-run-baked" style="background: var(--purple); color: white;" onclick="runBakedDemo()">Run Full Demo (No API Key)</button>
+        <button class="btn" id="btn-run-all" style="background: var(--green); color: white;" onclick="runAllDemos()">Run All Live (API Key)</button>
       </div>
 
       <div class="model-selector-row">
@@ -382,7 +384,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
           <div id="progress-bar" style="background:var(--green); height:100%; width:0%; transition:width 0.25s ease;"></div>
         </div>
       </div>
-      <pre id="output">Click 'Run Harness' or 'Run All Live Demos' above to stream live execution logs...</pre>
+      <pre id="output">Click Run Full Demo (No API Key) for the baked walkthrough, or run individual harnesses with a live key...</pre>
     </div>
 
     <div style="margin-top: 24px;">
@@ -593,6 +595,34 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       }
     }
 
+
+    async function runBakedDemo() {
+      document.getElementById("output").innerHTML = "";
+      document.getElementById("progress-wrap").style.display = "none";
+      setRunningState(true, "Replaying baked offline demo");
+      logAppend("Loading pre-recorded offline run (no API key)...", "info");
+      try {
+        const res = await fetch("/api/run-baked-stream", { method: "POST" });
+        await consumeSseResponse(res, (ev) => {
+          if (ev.type === "phase") logAppend("=== " + ev.label + " ===", "warn");
+          if (ev.type === "line" && ev.text) logAppend(ev.text, "info");
+          if (ev.type === "progress") updateProgressBar(ev);
+          if (ev.type === "progress_done") updateProgressBar({ label: ev.label, done: ev.done, total: ev.total, pct: 100 });
+          if (ev.type === "done") {
+            logAppend(ev.message || "Baked demo materialized.", "success");
+            if (ev.materialized) logAppend("Files: " + ev.materialized.join(", "), "info");
+          }
+          if (ev.type === "error") logAppend(ev.message, "error");
+        });
+      } catch (err) {
+        logAppend("Baked demo failed: " + err, "error");
+      } finally {
+        setRunningState(false, "Console Output — Baked Demo");
+        document.getElementById("caesar-iframe").src = "/caesar/chat.html?live=1";
+        checkEnvStatus();
+      }
+    }
+
     async function runAllDemos() {
       document.getElementById("output").innerHTML = "";
       document.getElementById("progress-wrap").style.display = "none";
@@ -687,6 +717,9 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(models_file.read_bytes())
             else:
                 self._send_json({"all": [], "curated": []})
+            return
+        elif self.path == "/api/baked":
+            self._send_json({"ok": is_baked_available(REPO_DIR), **load_manifest(REPO_DIR)})
             return
         elif self.path == "/api/caesar/presets":
             self._send_json({"categories": list(TOPIC_PRESETS.keys()), "presets": TOPIC_PRESETS})

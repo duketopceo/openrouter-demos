@@ -1,0 +1,218 @@
+{
+  "id": "cost-vs-quality",
+  "topic": "When OpenRouter omits usage.cost, should RouteKit invent a token-price estimate so dashboards look complete?",
+  "side_a": "Never estimate. Cost is usage.cost or 0. Honest zeros beat fake precision.",
+  "side_b": "Always fill in a made-up per-token price so finance is never looking at a zero.",
+  "model_a": "stub/capable-a",
+  "model_b": "stub/capable-b",
+  "caesar_model": "stub/caesar",
+  "end": "max_rounds",
+  "winner": "a",
+  "reason": "Reached max_rounds=2 without a concession.",
+  "scores": {
+    "a": 3,
+    "b": 2
+  },
+  "rounds": 2,
+  "max_rounds": 2,
+  "conceded_by": null,
+  "total_cost_usd": 0.0,
+  "total_latency_ms": 14.0,
+  "wall_ms": 0.15,
+  "flags": [],
+  "turns": [
+    {
+      "round": 1,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "If usage.cost is missing, the number is 0. Inventing a token price is fake precision finance will treat as real.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 112,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices"
+      ],
+      "points": 2,
+      "grounding": 0.9,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.90. A: cost is usage.cost or 0.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 65,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices"
+      ],
+      "points": 0,
+      "grounding": 0.9,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    },
+    {
+      "round": 1,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "Finance needs a number. A made-up per-token price keeps the dashboard from looking empty.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 89,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "placeholder rates keep charts continuous"
+      ],
+      "points": 1,
+      "grounding": 0.55,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 1. Latest: B. grounding=0.55. B wants a filled-in dashboard. Not a concession.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 86,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices",
+        "placeholder rates keep charts continuous"
+      ],
+      "points": 0,
+      "grounding": 0.55,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 1
+      }
+    },
+    {
+      "round": 2,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "Offline stubs already report 0. Live runs should do the same when OpenRouter omits cost. Dashboards can show unknown; they cannot show a guess.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 143,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices",
+        "unknown is allowed"
+      ],
+      "points": 1,
+      "grounding": 0.88,
+      "concession": false
+    },
+    {
+      "round": 2,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 3 \u2013 B 1. Latest: A. grounding=0.88. A restated honest zeros. Match continues.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 79,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices",
+        "unknown is allowed",
+        "placeholder rates keep charts continuous"
+      ],
+      "points": 0,
+      "grounding": 0.88,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 3,
+        "b": 1
+      }
+    },
+    {
+      "round": 2,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "Zeros look like a bug. Filling a placeholder rate is how ops teams keep charts continuous even when the provider is quiet.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 122,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "placeholder rates keep charts continuous",
+        "zeros look like a bug"
+      ],
+      "points": 1,
+      "grounding": 0.5,
+      "concession": false
+    },
+    {
+      "round": 2,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 3 \u2013 B 2. Latest: B. grounding=0.50. Still no concession. Score is not decisive.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 81,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "do not estimate token prices",
+        "unknown is allowed",
+        "placeholder rates keep charts continuous",
+        "zeros look like a bug"
+      ],
+      "points": 0,
+      "grounding": 0.5,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 3,
+        "b": 2
+      }
+    }
+  ],
+  "caesar_system_chars": 995
+}

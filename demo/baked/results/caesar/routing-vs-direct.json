@@ -1,0 +1,123 @@
+{
+  "id": "routing-vs-direct",
+  "topic": "Should a team put RouteKit-style routing in front of model providers, or call each provider API directly?",
+  "side_a": "A routing gateway (RouteKit) is better than calling provider APIs directly.",
+  "side_b": "Direct provider APIs are simpler and better than a gateway hop.",
+  "model_a": "stub/capable-a",
+  "model_b": "stub/capable-b",
+  "caesar_model": "stub/caesar",
+  "end": "concession",
+  "winner": "a",
+  "reason": "B conceded that a single direct client misses cross-vendor fallback.",
+  "scores": {
+    "a": 2,
+    "b": 0
+  },
+  "rounds": 1,
+  "max_rounds": 2,
+  "conceded_by": "b",
+  "total_cost_usd": 0.0,
+  "total_latency_ms": 9.0,
+  "wall_ms": 0.27,
+  "flags": [],
+  "turns": [
+    {
+      "round": 1,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "A single direct client dies on a 429. RouteKit's models[] list tries the next vendor on 429 or 5xx, which is the whole point of a gateway.",
+      "latency_ms": 4.0,
+      "prompt_tokens": 160,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 138,
+      "searched": true,
+      "info_gathered": [
+        "routing.fallback",
+        "models.single",
+        "routing.direct"
+      ],
+      "claims": [
+        "models[] retries next vendor on 429/5xx"
+      ],
+      "points": 2,
+      "grounding": 0.92,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.92. A grounded the 429 fallback claim in the brief.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 85,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "models[] retries next vendor on 429/5xx"
+      ],
+      "points": 0,
+      "grounding": 0.92,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    },
+    {
+      "round": 1,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "Direct SDKs skip the extra hop. I concede: a routing gateway handles 429/5xx fallbacks that a single direct client will miss.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 125,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "direct SDKs skip a hop"
+      ],
+      "points": 0,
+      "grounding": 0.9,
+      "concession": true
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: B. grounding=0.90. B conceded that a single direct client misses cross-vendor fallback.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 106,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "models[] retries next vendor on 429/5xx",
+        "direct SDKs skip a hop"
+      ],
+      "points": 0,
+      "grounding": 0.9,
+      "concession": true,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    }
+  ],
+  "caesar_system_chars": 995
+}

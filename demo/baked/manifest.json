@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "description": "Offline stub run \u2014 no API key. Materialized to results/ on Run Full Demo.",
+  "files": [
+    "bakeoff.json",
+    "caesar/cost-vs-quality.json",
+    "caesar/evals-vs-vibes.json",
+    "caesar/fallback-vs-single.json",
+    "caesar/jailbreak-judge.json",
+    "caesar/matches.jsonl",
+    "caesar/routing-vs-direct.json",
+    "caesar/tools-vs-prose.json",
+    "deflect.json",
+    "motion.json",
+    "runs.db"
+  ],
+  "event_count": 213,
+  "exit_code": 0
+}

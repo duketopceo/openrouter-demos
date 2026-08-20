@@ -1,0 +1,119 @@
+{
+  "id": "fallback-vs-single",
+  "topic": "Is RouteKit's models[] fallback list worth it, or is a single model field enough?",
+  "side_a": "The models[] fallback list is the point of a gateway.",
+  "side_b": "A single model field is enough; fallbacks add complexity.",
+  "model_a": "stub/capable-a",
+  "model_b": "stub/capable-b",
+  "caesar_model": "stub/caesar",
+  "end": "concession",
+  "winner": "a",
+  "reason": "B conceded that a 429 ends a one-shot client.",
+  "scores": {
+    "a": 2,
+    "b": 0
+  },
+  "rounds": 1,
+  "max_rounds": 2,
+  "conceded_by": "b",
+  "total_cost_usd": 0.0,
+  "total_latency_ms": 7.0,
+  "wall_ms": 0.08,
+  "flags": [],
+  "turns": [
+    {
+      "round": 1,
+      "speaker": "a",
+      "role": "debater",
+      "model": "stub/capable-a",
+      "text": "models[] is the product. The single model field is a convenience for one-shot routing and will not retry a second vendor on 429.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 128,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "single model field does not retry vendors"
+      ],
+      "points": 2,
+      "grounding": 0.9,
+      "concession": false
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.90. A distinguished models[] from the single model field.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 91,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "single model field does not retry vendors"
+      ],
+      "points": 0,
+      "grounding": 0.9,
+      "concession": false,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    },
+    {
+      "round": 1,
+      "speaker": "b",
+      "role": "debater",
+      "model": "stub/capable-b",
+      "text": "One model field keeps the request simple. I concede: without models[] a 429 is the end of the line, which is why the list exists.",
+      "latency_ms": 2.0,
+      "prompt_tokens": 80,
+      "completion_tokens": 40,
+      "cost_usd": 0.0,
+      "chars": 129,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "one field is simpler"
+      ],
+      "points": 0,
+      "grounding": 0.87,
+      "concession": true
+    },
+    {
+      "round": 1,
+      "speaker": "caesar",
+      "role": "judge",
+      "model": "stub/caesar",
+      "text": "A 2 \u2013 B 0. Latest: B. grounding=0.87. B conceded that a 429 ends a one-shot client.",
+      "latency_ms": 1.5,
+      "prompt_tokens": 100,
+      "completion_tokens": 80,
+      "cost_usd": 0.0,
+      "chars": 83,
+      "searched": false,
+      "info_gathered": [],
+      "claims": [
+        "single model field does not retry vendors",
+        "one field is simpler"
+      ],
+      "points": 0,
+      "grounding": 0.87,
+      "concession": true,
+      "flags": [],
+      "winner_so_far": "a",
+      "scores": {
+        "a": 2,
+        "b": 0
+      }
+    }
+  ],
+  "caesar_system_chars": 995
+}
