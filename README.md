@@ -32,6 +32,16 @@ The dashboard (`dev_server.py`) is the primary interface. From it you can:
 
 There is no hosted deployment in this repo — start the dev server locally.
 
+### Baked full demo (no API key)
+
+Click **Run Full Demo (No API Key)** on the dashboard. It replays a pre-recorded offline run (progress bars + logs) and copies committed artifacts from `demo/baked/results/` into `results/` — deflect, motion, bakeoff, Caesar traces, and `runs.db` — so every viewer and Results button works as if you just ran the suite.
+
+Regenerate the bake after changing fixtures:
+
+```bash
+./bin/bake-demo.sh
+```
+
 ## Offline vs Live
 
 | Mode | How | API key |
@@ -90,7 +100,8 @@ deflect/   motion/   bakeoff/   caesar/   # demo harnesses + cases + offline fix
 src/       openrouter.py, db.py, models.json, guardrails.py
 tests/     pytest against stub fixtures (no live API)
 dev_server.py                              # local dashboard on :8080
-results/   JSON outputs + runs.db (gitignored)
+demo/baked/  committed offline run (stream.jsonl + results snapshot)
+results/   JSON outputs + runs.db (gitignored; populated from demo/baked)
 ```
 
 ## Requirements
