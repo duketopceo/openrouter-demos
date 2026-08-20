@@ -13,7 +13,11 @@ import socketserver
 import json
 import os
 import subprocess
+import time
 from pathlib import Path
+
+from caesar.topics import TOPIC_PRESETS, list_presets
+from src.dev_stream import run_caesar_live, sse_event, stream_subprocess
 
 PORT = 8080
 REPO_DIR = Path(__file__).parent.resolve()
@@ -357,7 +361,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <h3>4. Caesar Debate</h3>
         <p>Two OpenRouter models in structured debate evaluated by Caesar judge.</p>
         <div class="btn-group">
-          <button class="btn demo-btn" onclick="runDemo('caesar')">Run Debate</button>
+          <button class="btn demo-btn" onclick="runDemo('caesar')">Run Batch</button>
+          <button class="btn btn-secondary" onclick="startCaesarLive()">Live Debate</button>
           <a class="btn btn-secondary" href="/caesar/chat.html" target="_blank">Open Replay</a>
         </div>
       </div>
@@ -370,6 +375,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
           <span id="console-title-text">Execution Debug Log</span>
         </h3>
         <button class="btn btn-secondary" onclick="runPytest()">Run Pytest Suite (Offline)</button>
+      </div>
+      <div id="progress-wrap" style="display:none; margin-bottom:12px;">
+        <div id="progress-label" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Starting…</div>
+        <div style="background:#21262d; border:1px solid var(--border); border-radius:6px; height:10px; overflow:hidden;">
+          <div id="progress-bar" style="background:var(--green); height:100%; width:0%; transition:width 0.25s ease;"></div>
+        </div>
       </div>
       <pre id="output">Click 'Run Harness' or 'Run All Live Demos' above to stream live execution logs...</pre>
     </div>
@@ -518,48 +529,89 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       }
     }
 
+
+    function updateProgressBar(p) {
+      const wrap = document.getElementById("progress-wrap");
+      const bar = document.getElementById("progress-bar");
+      const label = document.getElementById("progress-label");
+      wrap.style.display = "block";
+      const pct = p.pct != null ? p.pct : Math.round(100 * (p.done || 0) / Math.max(p.total || 1, 1));
+      label.textContent = (p.label || "eval") + " · " + (p.done || 0) + "/" + (p.total || "?") + " (" + pct + "%)" + (p.case_id ? " · " + p.case_id : "");
+      bar.style.width = pct + "%";
+    }
+
+    async function consumeSseResponse(res, onEvent) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const chunks = buf.split("\n\n");
+        buf = chunks.pop() || "";
+        for (const chunk of chunks) {
+          const line = chunk.trim();
+          if (!line.startsWith("data:")) continue;
+          onEvent(JSON.parse(line.slice(5).trim()));
+        }
+      }
+    }
+
+    function startCaesarLive() {
+      document.getElementById("caesar-iframe").src = "/caesar/chat.html?live=1";
+      document.getElementById("caesar-iframe").scrollIntoView({ behavior: "smooth" });
+    }
+
     async function runDemo(name) {
       document.getElementById("output").innerHTML = "";
+      document.getElementById("progress-wrap").style.display = "none";
       setRunningState(true, "Executing Demo: " + name);
-      logAppend(`Starting python -m ${name}.harness...`, "info");
-
+      logAppend("Starting " + name + " (live stream)...", "info");
+      let exitCode = 1;
       try {
-        const res = await fetch("/api/run", {
+        const res = await fetch("/api/run-stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ demo: name })
         });
-        const data = await res.json();
-        if (data.code === 0) {
-          logAppend("Demo execution finished successfully!", "success");
-          logAppend(data.output, "info");
-        } else {
-          logAppend(`Demo exited with code ${data.code}`, "error");
-          logAppend(data.output || data.error, "error");
-        }
+        await consumeSseResponse(res, (ev) => {
+          if (ev.type === "line" && ev.text) logAppend(ev.text, "info");
+          if (ev.type === "progress") updateProgressBar(ev);
+          if (ev.type === "progress_done") updateProgressBar({ label: ev.label, done: ev.done, total: ev.total, pct: 100 });
+          if (ev.type === "done") exitCode = ev.code;
+          if (ev.type === "error") logAppend(ev.message, "error");
+        });
+        if (exitCode === 0) logAppend("Demo finished successfully.", "success");
+        else logAppend("Demo exited with code " + exitCode, "error");
       } catch (err) {
         logAppend("Request execution failed: " + err, "error");
       } finally {
         setRunningState(false, "Console Output — " + name);
-        document.getElementById("caesar-iframe").src = "/caesar/chat.html";
+        document.getElementById("caesar-iframe").src = "/caesar/chat.html?live=1";
       }
     }
 
     async function runAllDemos() {
       document.getElementById("output").innerHTML = "";
+      document.getElementById("progress-wrap").style.display = "none";
       setRunningState(true, "Running All Live Demos Sequentially");
-      logAppend("Starting full suite: Deflect, Motion, Bakeoff, Caesar...", "info");
-
+      logAppend("Starting full suite (stream): Deflect, Motion, Bakeoff, Caesar...", "info");
       try {
-        const res = await fetch("/api/run-all", { method: "POST" });
-        const data = await res.json();
-        logAppend("All demos executed!", "success");
-        logAppend(data.output, "info");
+        const res = await fetch("/api/run-all-stream", { method: "POST" });
+        await consumeSseResponse(res, (ev) => {
+          if (ev.type === "phase") logAppend("=== " + ev.label + " ===", "warn");
+          if (ev.type === "line" && ev.text) logAppend(ev.text, "info");
+          if (ev.type === "progress") updateProgressBar(ev);
+          if (ev.type === "error") logAppend(ev.message, "error");
+          if (ev.type === "done") logAppend("All demos finished (code " + ev.code + ")", ev.code === 0 ? "success" : "error");
+        });
       } catch (err) {
         logAppend("Failed to run all demos: " + err, "error");
       } finally {
         setRunningState(false, "Console Output — All Demos Completed");
-        document.getElementById("caesar-iframe").src = "/caesar/chat.html";
+        document.getElementById("caesar-iframe").src = "/caesar/chat.html?live=1";
       }
     }
 
@@ -605,6 +657,17 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 """
 
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
+    def _send_sse_start(self) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
+
+    def _sse_write(self, payload: dict) -> None:
+        self.wfile.write(sse_event(payload))
+        self.wfile.flush()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(REPO_DIR), **kwargs)
 
@@ -624,6 +687,9 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(models_file.read_bytes())
             else:
                 self._send_json({"all": [], "curated": []})
+            return
+        elif self.path == "/api/caesar/presets":
+            self._send_json({"categories": list(TOPIC_PRESETS.keys()), "presets": TOPIC_PRESETS})
             return
         elif self.path == "/api/caesar-traces":
             caesar_dir = REPO_DIR / "results" / "caesar"
@@ -679,6 +745,81 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             new_lines = [f"{k}={v}" for k, v in file_env.items()]
             env_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
             self._send_json({"ok": True})
+            return
+
+
+        if self.path == "/api/run-stream":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length)
+            data = json.loads(body.decode("utf-8"))
+            demo = data.get("demo")
+            module_map = {
+                "deflect": "deflect.harness",
+                "motion": "motion.harness",
+                "bakeoff": "bakeoff.runner",
+                "caesar": "caesar.harness",
+            }
+            target_module = module_map.get(demo)
+            if not target_module:
+                self._send_json({"error": "Invalid demo name"}, status=400)
+                return
+            file_env = load_env_file()
+            env = os.environ.copy()
+            env.update(file_env)
+            env["PROGRESS"] = "1"
+            cmd = [str(VENV_PYTHON), "-m", target_module]
+            self._send_sse_start()
+            try:
+                for chunk in stream_subprocess(cmd, cwd=REPO_DIR, env=env):
+                    self.wfile.write(chunk)
+                    self.wfile.flush()
+            except BrokenPipeError:
+                pass
+            return
+
+        if self.path == "/api/run-all-stream":
+            file_env = load_env_file()
+            env = os.environ.copy()
+            env.update(file_env)
+            env["PROGRESS"] = "1"
+            demos = [
+                ("Support Deflection", [str(VENV_PYTHON), "-m", "deflect.harness"]),
+                ("GTM Motion", [str(VENV_PYTHON), "-m", "motion.harness"]),
+                ("Provider Ops Bakeoff", [str(VENV_PYTHON), "-m", "bakeoff.runner"]),
+                ("Caesar Debate", [str(VENV_PYTHON), "-m", "caesar.harness"]),
+            ]
+            self._send_sse_start()
+            overall = 0
+            try:
+                for label, cmd in demos:
+                    self._sse_write({"type": "phase", "label": label})
+                    for chunk in stream_subprocess(cmd, cwd=REPO_DIR, env=env):
+                        self.wfile.write(chunk)
+                        self.wfile.flush()
+                        if chunk.startswith(b"data:") and b'"done"' in chunk:
+                            try:
+                                payload = json.loads(chunk.decode().split("data:", 1)[1].strip())
+                                if payload.get("type") == "done":
+                                    overall = max(overall, int(payload.get("code", 1)))
+                            except Exception:
+                                pass
+                self._sse_write({"type": "done", "code": overall})
+            except BrokenPipeError:
+                pass
+            return
+
+        if self.path == "/api/caesar/live-stream":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length)
+            data = json.loads(body.decode("utf-8"))
+            file_env = load_env_file()
+            env = os.environ.copy()
+            env.update(file_env)
+            self._send_sse_start()
+            try:
+                run_caesar_live(data, repo_dir=REPO_DIR, env=env, emit=self._sse_write)
+            except Exception as exc:
+                self._sse_write({"type": "error", "message": str(exc)})
             return
 
         if self.path == "/api/run-all":

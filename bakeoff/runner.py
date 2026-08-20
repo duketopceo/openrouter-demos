@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from src.openrouter import ChatClient, OpenRouterClient, StubClient, load_dotenv
+from src.progress import EvalProgress
 
 ROOT = Path(__file__).resolve().parents[1]
 HERE = Path(__file__).resolve().parent
@@ -126,9 +127,15 @@ def score_output(text: str | None, rubric: dict[str, Any]) -> dict[str, Any]:
     return {"score": round(score, 4), "checks": checks, "output": body[:500]}
 
 
-def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]:
+def run_cases(
+    client: ChatClient,
+    cases: list[dict[str, Any]],
+    *,
+    label: str = "bakeoff",
+) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     errors: list[str] = []
+    progress = EvalProgress(label, len(cases))
     for case in cases:
         messages = [
             {"role": "system", "content": SYSTEM},
@@ -144,6 +151,7 @@ def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]
                 resp_model = getattr(client, "model", "unknown")
             else:
                 errors.append(f"{case['id']}: {type(exc).__name__}: {exc}")
+                progress.advance(case["id"], ok=False)
                 continue
         else:
             scored = score_output(resp.content, case["rubric"])
@@ -161,6 +169,8 @@ def run_cases(client: ChatClient, cases: list[dict[str, Any]]) -> dict[str, Any]
                 "output_preview": scored["output"][:180],
             }
         )
+        progress.advance(case["id"], ok=True)
+    progress.finish()
     if errors:
         raise RuntimeError("bakeoff cases failed: " + "; ".join(errors))
     n = len(rows)
@@ -223,8 +233,8 @@ def compare(
         client_b = client_b or cb
 
     cases = load_cases()
-    sum_a = run_cases(client_a, cases)
-    sum_b = run_cases(client_b, cases)
+    sum_a = run_cases(client_a, cases, label="bakeoff A")
+    sum_b = run_cases(client_b, cases, label="bakeoff B")
     gate_a = launch_gate(sum_a, baseline)
     gate_b = launch_gate(sum_b, baseline)
     return {

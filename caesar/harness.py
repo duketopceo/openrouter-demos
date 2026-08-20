@@ -11,6 +11,7 @@ from typing import Any
 from caesar.debate import run_debate
 from caesar.trace import write_match
 from src.openrouter import ChatClient, OpenRouterClient, StubClient, load_dotenv
+from src.progress import EvalProgress
 
 ROOT = Path(__file__).resolve().parents[1]
 HERE = Path(__file__).resolve().parent
@@ -162,16 +163,20 @@ def run_eval(
     rows: list[dict[str, Any]] = []
     matches: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    progress = EvalProgress("caesar", len(cases))
     for case in cases:
         try:
             match = run_debate(case, **clients)
         except Exception as exc:
             errors.append({"id": case["id"], "error": f"{type(exc).__name__}: {exc}"})
+            progress.advance(case["id"], ok=False)
             continue
         if persist:
             write_match(match, results_dir)
         matches.append(match)
         rows.append(score_case(case, match))
+        progress.advance(case["id"], ok=True)
+    progress.finish()
     if errors:
         detail = "; ".join(f"{e['id']}: {e['error']}" for e in errors)
         raise RuntimeError(f"{len(errors)} case(s) failed: {detail}")

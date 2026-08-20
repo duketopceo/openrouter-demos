@@ -8,9 +8,10 @@ from __future__ import annotations
 import json
 import re
 import time
-from typing import Any
+from typing import Any, Callable
 
 from caesar.caesar import CAESAR_SYSTEM, Judgment, judge_turn
+from caesar.topics import CATEGORY_HINTS
 from src.guardrails import assert_allowlisted_tool
 from src.openrouter import ChatClient, ChatResponse
 
@@ -228,11 +229,15 @@ def speaker_turn(
     }
 
 
-def _debater_messages(label: str, side: str, topic: str) -> list[dict[str, Any]]:
+def _debater_messages(
+    label: str, side: str, topic: str, *, category: str = "routekit"
+) -> list[dict[str, Any]]:
+    hint = CATEGORY_HINTS.get(category, CATEGORY_HINTS["routekit"])
     return [
         {
             "role": "system",
-            "content": DEBATER_SYSTEM.format(label=label, side=side),
+            "content": DEBATER_SYSTEM.format(label=label, side=side)
+            + f"\n\nSubject: {category}. {hint}",
         },
         {
             "role": "user",
@@ -292,6 +297,129 @@ def _turn(
     }
 
 
+def _caesar_opening(topic: str, side_a: str, side_b: str, *, category: str) -> dict[str, Any]:
+    text = (
+        f"Caesar sets the terms ({category}). Topic: {topic}\n"
+        f"Model A argues: {side_a}\n"
+        f"Model B argues: {side_b}\n"
+        "Debaters alternate. I will score sparingly — speak in short turns."
+    )
+    return _turn(
+        rnd=0,
+        speaker="caesar",
+        role="host",
+        model="caesar",
+        text=text,
+        latency_ms=0.0,
+        prompt_tokens=None,
+        completion_tokens=None,
+        cost_usd=0.0,
+        searched=False,
+        info_gathered=[],
+        claims=[],
+        points=0,
+        grounding=1.0,
+        concession=False,
+    )
+
+
+def _emit_turn(turns: list[dict[str, Any]], turn: dict[str, Any], on_turn: Callable[[dict], None] | None) -> None:
+    turns.append(turn)
+    if on_turn:
+        on_turn(turn)
+
+
+def _emit_debater(
+    *,
+    rnd: int,
+    speaker: str,
+    uttered: dict[str, Any],
+    text: str,
+    judgment: Judgment | None,
+    turns: list[dict[str, Any]],
+    on_turn: Callable[[dict], None] | None,
+) -> None:
+    claims: list[str] = []
+    points = 0
+    grounding = 0.0
+    concession = False
+    if judgment is not None:
+        claims = judgment.claims_a if speaker == "a" else judgment.claims_b
+        points = judgment.points_this_round.get(speaker, 0)
+        grounding = judgment.grounding
+        concession = judgment.concession
+    debater_turn = _turn(
+        rnd=rnd,
+        speaker=speaker,
+        role="debater",
+        model=uttered["model"],
+        text=text,
+        latency_ms=uttered["latency_ms"],
+        prompt_tokens=uttered["prompt_tokens"],
+        completion_tokens=uttered["completion_tokens"],
+        cost_usd=uttered["cost_usd"],
+        searched=uttered["searched"],
+        info_gathered=uttered["info_gathered"],
+        claims=claims,
+        points=points,
+        grounding=grounding,
+        concession=concession,
+    )
+    _emit_turn(turns, debater_turn, on_turn)
+
+
+def _emit_judge(
+    *,
+    rnd: int,
+    speaker: str,
+    judgment: Judgment,
+    cresp: ChatResponse,
+    turns: list[dict[str, Any]],
+    on_turn: Callable[[dict], None] | None,
+) -> None:
+    judge_turn_dict = _turn(
+        rnd=rnd,
+        speaker="caesar",
+        role="judge",
+        model=cresp.model,
+        text=_caesar_line(judgment, speaker),
+        latency_ms=cresp.latency_ms,
+        prompt_tokens=cresp.prompt_tokens,
+        completion_tokens=cresp.completion_tokens,
+        cost_usd=cresp.cost_usd,
+        searched=False,
+        info_gathered=[],
+        claims=judgment.claims_a + judgment.claims_b,
+        points=0,
+        grounding=judgment.grounding,
+        concession=judgment.concession,
+    )
+    judge_turn_dict["flags"] = list(judgment.flags)
+    judge_turn_dict["winner_so_far"] = judgment.winner_so_far
+    judge_turn_dict["scores"] = dict(judgment.scores)
+    _emit_turn(turns, judge_turn_dict, on_turn)
+
+
+def _end_from_judgment(
+    judgment: Judgment, speaker: str
+) -> tuple[str | None, str | None, str, str | None]:
+    if judgment.concession:
+        return (
+            "concession",
+            judgment.winner_so_far,
+            judgment.reason or f"{speaker.upper()} conceded.",
+            speaker,
+        )
+    if judgment.end and judgment.end_reason == "caesar":
+        return (
+            "caesar",
+            judgment.winner_so_far,
+            judgment.reason or "Caesar called the match.",
+            None,
+        )
+    return (None, None, "", None)
+
+
 def run_debate(
     case: dict[str, Any],
     *,
@@ -299,6 +427,10 @@ def run_debate(
     client_b: ChatClient,
     client_caesar: ChatClient,
     max_rounds: int | None = None,
+    on_turn: Callable[[dict[str, Any]], None] | None = None,
+    judge_each_turn: bool = True,
+    caesar_opens: bool = False,
+    category: str = "routekit",
 ) -> dict[str, Any]:
     topic = str(case.get("topic") or "").strip()
     if not topic:
@@ -310,8 +442,8 @@ def run_debate(
     if rounds_cap < 1:
         raise ValueError("max_rounds must be >= 1")
 
-    msgs_a = _debater_messages("A", side_a, topic)
-    msgs_b = _debater_messages("B", side_b, topic)
+    msgs_a = _debater_messages("A", side_a, topic, category=category)
+    msgs_b = _debater_messages("B", side_b, topic, category=category)
     transcript: list[dict[str, Any]] = []
     turns: list[dict[str, Any]] = []
     scores = {"a": 0, "b": 0}
@@ -329,14 +461,19 @@ def run_debate(
     rounds_done = 0
     conceded_by: str | None = None
 
+    if caesar_opens:
+        _emit_turn(turns, _caesar_opening(topic, side_a, side_b, category=category), on_turn)
+
     stop = False
     for rnd in range(1, rounds_cap + 1):
         rounds_done = rnd
+        last_speaker = ""
+        last_text = ""
+        last_uttered: dict[str, Any] = {}
         for speaker, client, messages, _side in speakers:
             uttered = speaker_turn(client, messages, case_id=case_id)
             text = uttered["text"]
             messages.append({"role": "assistant", "content": text})
-            # Opponent sees this as the next user turn.
             other = msgs_b if speaker == "a" else msgs_a
             other.append(
                 {
@@ -345,76 +482,87 @@ def run_debate(
                 }
             )
             transcript.append({"speaker": speaker, "text": text})
+            last_speaker = speaker
+            last_text = text
+            last_uttered = uttered
 
+            if judge_each_turn:
+                judgment, cresp = judge_turn(
+                    client_caesar,
+                    topic=topic,
+                    transcript=transcript,
+                    last_text=text,
+                    speaker=speaker,
+                    prior_scores=scores,
+                    case_id=case_id,
+                )
+                scores = judgment.scores
+                flags.extend(judgment.flags)
+                _emit_debater(
+                    rnd=rnd,
+                    speaker=speaker,
+                    uttered=uttered,
+                    text=text,
+                    judgment=judgment,
+                    turns=turns,
+                    on_turn=on_turn,
+                )
+                _emit_judge(
+                    rnd=rnd,
+                    speaker=speaker,
+                    judgment=judgment,
+                    cresp=cresp,
+                    turns=turns,
+                    on_turn=on_turn,
+                )
+                hit, win, rsn, conceder = _end_from_judgment(judgment, speaker)
+                if hit:
+                    end = hit
+                    winner = win or winner
+                    reason = rsn
+                    if conceder:
+                        conceded_by = conceder
+                    stop = True
+                    break
+            else:
+                _emit_debater(
+                    rnd=rnd,
+                    speaker=speaker,
+                    uttered=uttered,
+                    text=text,
+                    judgment=None,
+                    turns=turns,
+                    on_turn=on_turn,
+                )
+
+        if not judge_each_turn and not stop and last_speaker:
             judgment, cresp = judge_turn(
                 client_caesar,
                 topic=topic,
                 transcript=transcript,
-                last_text=text,
-                speaker=speaker,
+                last_text=last_text,
+                speaker=last_speaker,
                 prior_scores=scores,
                 case_id=case_id,
             )
             scores = judgment.scores
             flags.extend(judgment.flags)
-            claims = judgment.claims_a if speaker == "a" else judgment.claims_b
-            points = judgment.points_this_round.get(speaker, 0)
-
-            turns.append(
-                _turn(
-                    rnd=rnd,
-                    speaker=speaker,
-                    role="debater",
-                    model=uttered["model"],
-                    text=text,
-                    latency_ms=uttered["latency_ms"],
-                    prompt_tokens=uttered["prompt_tokens"],
-                    completion_tokens=uttered["completion_tokens"],
-                    cost_usd=uttered["cost_usd"],
-                    searched=uttered["searched"],
-                    info_gathered=uttered["info_gathered"],
-                    claims=claims,
-                    points=points,
-                    grounding=judgment.grounding,
-                    concession=judgment.concession,
-                )
+            _emit_judge(
+                rnd=rnd,
+                speaker=last_speaker,
+                judgment=judgment,
+                cresp=cresp,
+                turns=turns,
+                on_turn=on_turn,
             )
-            turns.append(
-                _turn(
-                    rnd=rnd,
-                    speaker="caesar",
-                    role="judge",
-                    model=cresp.model,
-                    text=_caesar_line(judgment, speaker),
-                    latency_ms=cresp.latency_ms,
-                    prompt_tokens=cresp.prompt_tokens,
-                    completion_tokens=cresp.completion_tokens,
-                    cost_usd=cresp.cost_usd,
-                    searched=False,
-                    info_gathered=[],
-                    claims=judgment.claims_a + judgment.claims_b,
-                    points=0,
-                    grounding=judgment.grounding,
-                    concession=judgment.concession,
-                )
-            )
-            turns[-1]["flags"] = list(judgment.flags)
-            turns[-1]["winner_so_far"] = judgment.winner_so_far
-            turns[-1]["scores"] = dict(scores)
-
-            if judgment.concession:
-                conceded_by = speaker
-                winner = judgment.winner_so_far
-                end = "concession"
-                reason = judgment.reason or f"{speaker.upper()} conceded."
+            hit, win, rsn, conceder = _end_from_judgment(judgment, last_speaker)
+            if hit:
+                end = hit
+                winner = win or winner
+                reason = rsn
+                if conceder:
+                    conceded_by = conceder
                 stop = True
-                break
-            if judgment.end and judgment.end_reason == "caesar":
-                winner = judgment.winner_so_far
-                end = "caesar"
-                reason = judgment.reason or "Caesar called the match."
-                stop = True
-                break
         if stop:
             break
     else:

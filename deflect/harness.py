@@ -11,6 +11,7 @@ from typing import Any
 from deflect.agent import Agent, AgentResult
 from src.guardrails import guardrail_violation_for_eval
 from src.openrouter import ChatClient, OpenRouterClient, StubClient, load_dotenv
+from src.progress import EvalProgress
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES_PATH = Path(__file__).resolve().parent / "cases.jsonl"
@@ -112,13 +113,17 @@ def run_eval(
     agent = Agent(client)
     rows: list[dict[str, Any]] = []
     errors: list[dict[str, str]] = []
+    progress = EvalProgress("deflect", len(cases))
     for case in cases:
         try:
             result = agent.run(case["ticket"], case_id=case["id"])
         except Exception as exc:
             errors.append({"id": case["id"], "error": f"{type(exc).__name__}: {exc}"})
+            progress.advance(case["id"], ok=False)
             continue
         rows.append(score_case(case, result))
+        progress.advance(case["id"], ok=True)
+    progress.finish()
     if errors:
         # Fail loud: a crashed case is not a silent 0.0 accuracy.
         detail = "; ".join(f"{e['id']}: {e['error']}" for e in errors)

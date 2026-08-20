@@ -64,6 +64,10 @@
       color: var(--c);
       font-family: ui-sans-serif, system-ui, sans-serif;
     }
+    .row.caesar.host .bubble {
+      border-color: #5a5030;
+      color: #e8dcb0;
+    }
     .who { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; font-family: ui-sans-serif, system-ui, sans-serif; color: var(--muted); }
     .row.a .who { color: var(--a); }
     .row.b .who { color: var(--b); }
@@ -90,6 +94,22 @@
     <h1><span>Caesar</span> — two models, one overlooker</h1>
     <p>Replay a match trace. No API key lives in this page. Stats hide in the drawer.</p>
   </header>
+  <div class="bar live-bar" id="live-bar">
+    <strong style="color:var(--c);">Live debate</strong>
+    <label>Category
+      <select id="live-category" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px;">
+        <option value="english">English</option>
+        <option value="math">Math</option>
+        <option value="routekit">RouteKit</option>
+      </select>
+    </label>
+    <label>Preset
+      <select id="live-preset" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px; min-width:180px;"></select>
+    </label>
+    <label>Rounds <input id="live-rounds" type="number" min="1" max="12" value="3" style="width:48px; background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px; border-radius:4px;" /></label>
+    <button type="button" id="live-start">Start live debate</button>
+    <span class="meta" id="live-status"></span>
+  </div>
   <div class="bar">
     <label>Select Trace: <select id="trace-select" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px;"><option value="">Loading traces...</option></select></label>
     <label>Or JSON File: <input id="file" type="file" accept="application/json,.json" /></label>
@@ -108,10 +128,31 @@
   <aside class="drawer" id="drawer" hidden></aside>
   <script>
     const $ = (id) => document.getElementById(id);
-    function label(speaker) {
+    function label(speaker, role) {
       if (speaker === "a") return "Model A";
       if (speaker === "b") return "Model B";
+      if (role === "host") return "Caesar (opens)";
       return "Caesar";
+    }
+    function appendTurnBubble(t) {
+      const main = $("main");
+      if (main.querySelector(".empty")) main.innerHTML = "";
+      const sp = t.speaker === "a" || t.speaker === "b" ? t.speaker : "caesar";
+      const row = document.createElement("div");
+      row.className = "row " + sp + (t.role === "host" ? " host" : "");
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      const who = document.createElement("div");
+      who.className = "who";
+      who.textContent = label(sp, t.role) + (t.model ? " · " + t.model : "") + (t.round ? " · r" + t.round : "");
+      const txt = document.createElement("div");
+      txt.className = "txt";
+      txt.textContent = t.text || "";
+      bubble.appendChild(who);
+      bubble.appendChild(txt);
+      row.appendChild(bubble);
+      main.appendChild(row);
+      row.scrollIntoView({ behavior: "smooth", block: "end" });
     }
     function showError(msg) {
       const el = $("err");
@@ -136,7 +177,7 @@
         bubble.className = "bubble";
         const who = document.createElement("div");
         who.className = "who";
-        who.textContent = label(sp) + (t.model ? " · " + t.model : "");
+        who.textContent = label(sp, t.role) + (t.model ? " · " + t.model : "");
         const txt = document.createElement("div");
         txt.className = "txt";
         txt.textContent = t.text || "";
@@ -215,6 +256,100 @@
     });
 
     loadTracesList();
+
+    let presetsByCategory = {};
+
+    async function loadPresets() {
+      try {
+        const res = await fetch("/api/caesar/presets");
+        if (!res.ok) return;
+        const data = await res.json();
+        presetsByCategory = data.presets || {};
+        refreshPresetOptions();
+      } catch (e) {}
+    }
+
+    function refreshPresetOptions() {
+      const cat = $("live-category").value;
+      const sel = $("live-preset");
+      sel.innerHTML = "";
+      const items = presetsByCategory[cat] || [];
+      items.forEach((p) => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.id;
+        sel.appendChild(opt);
+      });
+      const custom = document.createElement("option");
+      custom.value = "";
+      custom.textContent = "(custom topic below)";
+      sel.appendChild(custom);
+    }
+
+    $("live-category").addEventListener("change", refreshPresetOptions);
+
+    async function consumeSse(res, onEvent) {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const chunks = buf.split("\n\n");
+        buf = chunks.pop() || "";
+        for (const chunk of chunks) {
+          const line = chunk.trim();
+          if (!line.startsWith("data:")) continue;
+          onEvent(JSON.parse(line.slice(5).trim()));
+        }
+      }
+    }
+
+    $("live-start").addEventListener("click", async () => {
+      showError("");
+      $("live-status").textContent = "Running…";
+      $("live-start").disabled = true;
+      $("main").innerHTML = "";
+      const h = document.createElement("p");
+      h.className = "topic";
+      h.id = "live-topic";
+      h.textContent = "Starting debate…";
+      $("main").appendChild(h);
+      try {
+        const res = await fetch("/api/caesar/live-stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category: $("live-category").value,
+            preset_id: $("live-preset").value,
+            max_rounds: Number($("live-rounds").value || 3),
+          }),
+        });
+        await consumeSse(res, (ev) => {
+          if (ev.type === "start") {
+            $("live-topic").textContent = ev.topic || "";
+            $("live-status").textContent = "Round cap: " + ev.max_rounds;
+          }
+          if (ev.type === "turn") appendTurnBubble(ev.turn);
+          if (ev.type === "done") {
+            $("live-status").textContent = "Done · winner " + (ev.winner || "?") + " · " + (ev.reason || "");
+            loadTracesList();
+          }
+          if (ev.type === "error") showError(ev.message);
+        });
+      } catch (e) {
+        showError(String(e));
+      } finally {
+        $("live-start").disabled = false;
+      }
+    });
+
+    if (new URLSearchParams(location.search).get("live") === "1") {
+      $("live-bar").scrollIntoView({ behavior: "smooth" });
+    }
+
+    loadPresets();
 
     $("file").addEventListener("change", (ev) => {
       const file = ev.target.files && ev.target.files[0];
