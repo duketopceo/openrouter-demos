@@ -780,6 +780,21 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json({"ok": True})
             return
 
+        if self.path == "/api/run-baked-stream":
+            if not is_baked_available(REPO_DIR):
+                self._send_json(
+                    {"error": "baked demo not found — run scripts/bake_demo.py"},
+                    status=404,
+                )
+                return
+            self._send_sse_start()
+            try:
+                for chunk in stream_baked_replay(REPO_DIR):
+                    self.wfile.write(chunk)
+                    self.wfile.flush()
+            except BrokenPipeError:
+                pass
+            return
 
         if self.path == "/api/run-stream":
             content_length = int(self.headers.get("Content-Length", 0))
