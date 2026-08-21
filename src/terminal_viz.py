@@ -61,23 +61,29 @@ def horizontal_bar(
 
 
 def ascii_line_chart(
-    series: list[tuple[str, Sequence[float]]],
+    series: list[tuple[str, Sequence[float | None]]],
     *,
     height: int = 8,
     width: int = 48,
     colors: tuple[str, ...] = ("*", "+", "x"),
 ) -> list[str]:
     """Multi-series ASCII line chart. Returns lines to print."""
-    if not series or all(not s[1] for s in series):
+    # Drop None values so missing metrics don't crash float().
+    clean = [
+        (name, [v for v in vals if v is not None])
+        for name, vals in series
+    ]
+    clean = [(n, v) for n, v in clean if v]
+    if not clean:
         return ["(no data)"]
 
-    all_vals = [float(v) for _, vals in series for v in vals]
+    all_vals = [float(v) for _, vals in clean for v in vals]
     lo, hi = _scale(all_vals)
-    n = max(len(vals) for _, vals in series)
+    n = max(len(vals) for _, vals in clean)
     n = max(n, 2)
 
     grids: list[list[list[str | None]]] = []
-    for _name, vals in series:
+    for _name, vals in clean:
         row: list[list[str | None]] = [[None] * n for _ in range(height)]
         for i, v in enumerate(vals):
             col = int(i / max(len(vals) - 1, 1) * (n - 1))

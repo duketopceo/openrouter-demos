@@ -9,6 +9,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
+BAKED = ROOT / "demo" / "baked" / "results"
 
 
 def _read_json(path: Path) -> dict[str, Any] | None:
@@ -17,10 +18,18 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _read_artifact(name: str) -> dict[str, Any] | None:
+    """Read an artifact from results/, falling back to baked/results/."""
+    primary = RESULTS / name
+    if primary.is_file():
+        return _read_json(primary)
+    return _read_json(BAKED / name)
+
+
 def build_viz_payload() -> dict[str, Any]:
-    deflect = _read_json(RESULTS / "deflect.json") or {}
-    bakeoff = _read_json(RESULTS / "bakeoff.json") or {}
-    motion = _read_json(RESULTS / "motion.json") or {}
+    deflect = _read_artifact("deflect.json") or {}
+    bakeoff = _read_artifact("bakeoff.json") or {}
+    motion = _read_artifact("motion.json") or {}
 
     # 1) Token / context window blocks (from case-level token counts in stubs + aggregates)
     token_cases: list[dict[str, Any]] = []
