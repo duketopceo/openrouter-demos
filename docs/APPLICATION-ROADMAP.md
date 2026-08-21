@@ -16,20 +16,23 @@
 - **BDH (Dragon Hatchling) research dossier** added — Pathway's post-transformer architecture, honest research-preview framing with launch-gate eval playbook (not a fake benchmark)
 - **Repo:** `duketopceo/openrouter-demos` (public), README updated to note Railway hosting
 
-## 2. Two Resumes (IN PROGRESS)
+## 2. Two Resumes (DONE)
 
-### Resume A — Applied AI Engineer (support/GTM)
+### Resume A — Applied AI Engineer (support/GTM) ✅
 - 1-page, titled **Applied AI** (support OR GTM, not both)
-- Open with **live demo URL**
+- Open with **live demo URL** (`luke-the-duke.com/openrouter`)
 - Then Khan, Kurultai, Bartlett helpdesk (support/GTM proof)
-- **Pace demoted** to line 2 of projects or off page
-- One capability rewritten as **measured impact** with a defensible number
+- **Pace demoted** to a single line in projects
+- **Measured impact** line: "Helpdesk dashboard replaced follow-up spreadsheets — manual reporting dropped from daily to weekly"
+- File: `luke-kimball-applied-ai.docx/.pdf`
 
-### Resume B — Provider Operations & Support Engineer
+### Resume B — Provider Operations & Support Engineer ✅
 - Second resume, same facts, new order
-- **Headline:** model onboarding, evals, inference APIs
+- **Headline:** AI Provider Operations — Model Onboarding & Eval Engineering
 - Harness speech = **one line**
-- Bakeoff / launch gate / deprecation prominent
+- Opens with provider bakeoff demo (latency, cost, quality, launch gate, deprecation)
+- BDH (Dragon Hatchling) launch-gate playbook prominent
+- File: `luke-kimball-provider-ops.docx/.pdf`
 
 ## 3. Cover Notes (TODO)
 
