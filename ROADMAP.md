@@ -18,7 +18,7 @@
 | 5 | CI + bootstrap + bugfixes | ✅ Done |
 | 6 | Harden + ship (streaming, baked demo, model catalog) | ✅ Done |
 | 7 | Portfolio hub integration (luke-the-duke.com) | ✅ Done (2026-08-20) |
-| 8 | Live OpenRouter run + bakeoff sign-off | 🔲 You |
+| 8 | Live OpenRouter run + bakeoff sign-off | ✅ Done (2026-08-20) |
 | 9 | Submission polish (walkthrough redo, launch note) | 🔳 Partial |
 
 ---
@@ -87,13 +87,13 @@ Post-build polish shipped on `main` (PRs #1–#3 + follow-on commits):
 - [x] Walkthrough video wired as `demoVideoUrl` → Cloudflare R2 (`openrouter-demos-walkthrough.mp4`)
 - [x] Dossier page renders at `luke-the-duke.com/projects/openrouter-demos`
 
-No `liveUrl` in `deployments.ts` — intentional. The dashboard is a local dev tool requiring an API key; the portfolio surface is the dossier + walkthrough video, not a public deployment.
+No `liveUrl` in `deployments.ts` — **superseded 2026-08-20.** The dashboard is now **deployed live on Railway** at `https://luke-the-duke.com/openrouter`, with the baked 3-model bakeoff, session-only API-key live tests, and a BDH (Dragon Hatchling) research dossier. The portfolio surface is the live dashboard + walkthrough video. A `liveUrl`/`demoUrl` pointing at `luke-the-duke.com/openrouter` is a pending follow-up in `projects.ts`.
 
 ---
 
-## Phase 8 — Live demo run (your turn)
+## Phase 8 — Live demo run
 
-**Status:** not started. As of 2026-08-20 every run in `results/runs.db` is `live:0` (offline stubs); `bakeoff.json` shows `live: false`. The `.env` has `RUN_LIVE` + model slugs set, so a live run is unblocked whenever you run it.
+**Status: ✅ DONE (2026-08-20).** Ran the live 3-model bakeoff on OpenRouter: Qwen 3.8-27b, Muse Glimmer 30B, Gemma 4 31B — 75 real API calls (5 runs × 5 tasks × 3 models). Results baked into the live dashboard at `luke-the-duke.com/openrouter` and committed as `src/data/bakeoff.json` in portfolio-hub. The dashboard also supports session-only API-key live tests for any visitor.
 
 Requires `OPENROUTER_API_KEY` and `RUN_LIVE=1`.
 
@@ -154,9 +154,8 @@ For OpenRouter hiring / portfolio handoff:
 
 ## Out of scope (intentional)
 
-- Hosted deployment (local dashboard only)
 - Real PII or Bartlett data (synthetic cases only)
-- Auth / multi-tenant (single-operator dev tool)
+- Auth / multi-tenant (single-operator dev tool; public dashboard uses session-only visitor keys)
 - Model fine-tuning or training pipelines
 
 ---
