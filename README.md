@@ -30,7 +30,7 @@ The dashboard (`dev_server.py`) is the primary interface. From it you can:
 - Save `OPENROUTER_API_KEY`, model slugs, and `RUN_LIVE=1` to `.env`
 - Replay Caesar debate traces in the embedded viewer (`caesar/chat.html`)
 
-There is no hosted deployment in this repo — start the dev server locally.
+Live deployment on **Railway**, attached to the portfolio at **https://luke-the-duke.com/openrouter**. Run locally for development with the steps above.
 
 ### Baked full demo (no API key)
 
