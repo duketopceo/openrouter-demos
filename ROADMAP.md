@@ -19,7 +19,7 @@
 | 6 | Harden + ship (streaming, baked demo, model catalog) | ✅ Done |
 | 7 | Portfolio hub integration (luke-the-duke.com) | ✅ Done (2026-08-20) |
 | 8 | Live OpenRouter run + bakeoff sign-off | ✅ Done (2026-08-20) |
-| 9 | Submission polish (walkthrough redo, launch note) | 🔳 Partial |
+| 9 | Submission polish (walkthrough redo, launch note) | 🔳 Partial (README link + topics done) |
 
 ---
 
@@ -145,10 +145,10 @@ Swap via dashboard or `.env` (`OPENROUTER_MODEL`, `OPENROUTER_MODEL_A`, `OPENROU
 For OpenRouter hiring / portfolio handoff:
 
 - [x] Screen recording shipped to Cloudflare R2 + wired into portfolio hub (`openrouter-demos-walkthrough.mp4`, offline ~20s)
+- [x] README links to ROADMAP + live dashboard (2026-08-20)
+- [x] GitHub topics pinned: `openrouter`, `llm-evals`, `tool-calling` (2026-08-20)
+- [x] Sanitized `demo/baked/results/` JSON committed for reviewers who skip live API
 - [ ] **Redo walkthrough** — extend into a full live run recording (dashboard → run live → results → Caesar replay); logged as a follow-up, not started
-- [ ] README already documents offline vs live; link to this roadmap
-- [ ] Optional: pin repo topics (`openrouter`, `llm-evals`, `tool-calling`)
-- [ ] Optional: add `results/` sample JSON (sanitized) for reviewers who skip live API
 
 ---
 
