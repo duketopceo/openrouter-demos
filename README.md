@@ -108,3 +108,7 @@ results/   JSON outputs + runs.db (gitignored; populated from demo/baked)
 
 - Python 3.11+
 - Dependencies: `httpx`, `pytest` (see `requirements.txt` / `pyproject.toml`)
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for phase status — four demos, local dashboard, offline fixtures, metrics, CI, baked offline demo, live Railway deployment, and the OpenRouter application submission polish. Live dashboard: [luke-the-duke.com/openrouter](https://luke-the-duke.com/openrouter).
