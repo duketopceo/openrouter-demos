@@ -10,3 +10,4 @@ results/
 !demo/baked/**
 dist/
 build/
+bakeoff_results.json
