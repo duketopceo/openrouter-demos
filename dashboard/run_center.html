@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenRouter Run Center</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --heading: #f0f6fc;
+      --accent: #58a6ff;
+      --green: #238636;
+      --purple: #8957e5;
+      --muted: #8b949e;
+      --code: #010409;
+      --warn: #e3b341;
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header h1 { margin: 0; font-size: 18px; color: var(--heading); }
+    header p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    label.field {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    select, input[type=password] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    select:focus, input:focus { outline: 2px solid rgba(88,166,255,0.3); border-color: var(--accent); }
+    select[multiple] {
+      min-height: 200px;
+      padding: 6px;
+    }
+    select[multiple] option {
+      padding: 4px 6px;
+      border-radius: 4px;
+      margin: 1px 0;
+    }
+    select[multiple] option:checked {
+      background: #1f3a5f;
+      color: var(--heading);
+    }
+    .checks { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .checks label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-purple { background: var(--purple); color: #fff; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .live-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 900px) { .live-grid { grid-template-columns: 1fr; } }
+    .log-box {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      height: 320px;
+      overflow-y: auto;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 12px;
+    }
+    .log-line { margin: 2px 0; }
+    .log-ok { color: #56d364; }
+    .log-err { color: #f85149; }
+    .log-warn { color: var(--warn); }
+    .progress-wrap { margin-bottom: 10px; }
+    .progress-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .progress-bar {
+      height: 8px;
+      background: #21262d;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+    .debate-box .turn-a { color: #79c0ff; }
+    .debate-box .turn-b { color: var(--warn); }
+    .debate-box .turn-j { color: #56d364; }
+    .chart-wrap { position: relative; margin-top: 12px; }
+    .chart-svg { width: 100%; height: 280px; display: block; }
+    .chart-bar { cursor: pointer; transition: opacity 0.15s; }
+    .chart-bar:hover { opacity: 0.85; }
+    .tooltip {
+      position: fixed;
+      display: none;
+      z-index: 100;
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      max-width: 320px;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .tooltip strong { color: var(--heading); display: block; margin-bottom: 6px; word-break: break-all; }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+    .history-table th, .history-table td {
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .history-table th { color: var(--muted); font-weight: 600; }
+    .history-table tr { cursor: pointer; }
+    .history-table tr:hover { background: rgba(88,166,255,0.06); }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+    }
+    .pill-pass { border-color: var(--green); color: #56d364; }
+    .pill-fail { border-color: #f85149; color: #f85149; }
+    .caesar-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 80px auto;
+      gap: 10px;
+      align-items: end;
+      margin-top: 12px;
+    }
+    @media (max-width: 700px) { .caesar-row { grid-template-columns: 1fr; } }
+    .detail-pre {
+      margin-top: 12px;
+      max-height: 200px;
+      overflow: auto;
+      background: var(--code);
+      border: 1px solid var(--border);
+      padding: 10px;
+      font-size: 11px;
+      border-radius: 6px;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>OpenRouter Run Center</h1>
+      <p>Select models · select tests · watch live · compare bakeoff sweeps</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select id="run-mode" style="width:auto;">
+        <option value="offline">Offline stubs</option>
+        <option value="live">Live API</option>
+      </select>
+      <span id="env-badge" class="pill">…</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+      <aside>
+        <div class="panel">
+          <h2>Models</h2>
+          <label class="field">Catalog</label>
+          <select id="catalog-filter" onchange="renderModelList()">
+            <option value="curated">Curated (32)</option>
+            <option value="probe">Safety probe (5)</option>
+            <option value="all">All models</option>
+          </select>
+          <label class="field" style="margin-top:12px">Select one or more (⌘/Ctrl+click)</label>
+          <select id="model-list" multiple></select>
+          <div class="actions">
+            <button class="btn btn-ghost" type="button" onclick="selectAllVisible()">All visible</button>
+            <button class="btn btn-ghost" type="button" onclick="clearModels()">Clear</button>
+          </div>
+          <label class="field" style="margin-top:12px">API key (optional)</label>
+          <input type="password" id="api-key" placeholder="sk-or-v1-…" />
+          <button class="btn btn-ghost" style="width:100%;margin-top:8px" type="button" onclick="saveKey()">Save key + models</button>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <h2>Tests</h2>
+          <div class="checks">
+            <label><input type="checkbox" id="t-bakeoff" checked /> Bakeoff (quality gate)</label>
+            <label><input type="checkbox" id="t-deflect" /> Support deflection</label>
+            <label><input type="checkbox" id="t-motion" /> GTM motion</label>
+            <label><input type="checkbox" id="t-probe" /> Guardrail probe</label>
+            <label><input type="checkbox" id="t-caesar" /> Caesar batch</label>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btn-run" type="button" onclick="runSelected()">Run selected</button>
+            <button class="btn btn-purple" type="button" onclick="runBaked()">Offline demo</button>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin:12px 0 0">
+            Multi-model + bakeoff = sweep each model through all cases, saved to history.
+          </p>
+        </div>
+      </aside>
+
+      <section>
+        <div class="live-grid">
+          <div class="panel">
+            <h2>Live run output</h2>
+            <div class="progress-wrap" id="progress-wrap" style="display:none">
+              <div class="progress-label" id="progress-label">Starting…</div>
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            </div>
+            <div class="log-box" id="log"></div>
+          </div>
+          <div class="panel debate-box">
+            <h2>Live debate</h2>
+            <div class="caesar-row">
+              <div>
+                <label class="field">Category</label>
+                <select id="caesar-cat" onchange="refreshPresets()"></select>
+              </div>
+              <div>
+                <label class="field">Topic</label>
+                <select id="caesar-preset"></select>
+              </div>
+              <div>
+                <label class="field">Rounds</label>
+                <select id="caesar-rounds">
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <button class="btn btn-green" type="button" onclick="runCaesarLive()">Start</button>
+            </div>
+            <div class="log-box" id="debate-log" style="margin-top:12px;height:240px"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Bakeoff compare — quality by model</h2>
+          <div class="chart-legend">
+            <span><span class="dot" style="background:var(--accent)"></span>Quality (0–1)</span>
+            <span><span class="dot" style="background:var(--green)"></span>Gate pass</span>
+            <span style="margin-left:auto">Hover bars for latency, cost, summary</span>
+          </div>
+          <div class="chart-wrap">
+            <svg class="chart-svg" id="chart" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div id="run-detail" class="detail-pre" style="display:none"></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <h2>Run history (saved automatically)</h2>
+          <table class="history-table">
+            <thead>
+              <tr><th>When</th><th>Test</th><th>Model</th><th>Quality</th><th>Latency</th><th>Cost</th><th>Gate</th></tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    let modelsData = { curated: [], all: [], probe_picks: [] };
+    let caesarPresets = {};
+    let chartRuns = [];
+
+    init();
+
+    async function init() {
+      await Promise.all([loadModels(), loadPresets(), refreshHistory(), refreshChart()]);
+      checkEnv();
+    }
+
+    function log(msg, cls = "") {
+      const el = document.getElementById("log");
+      const line = document.createElement("div");
+      line.className = "log-line" + (cls ? " log-" + cls : "");
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function debateLog(msg, cls = "") {
+      const el = document.getElementById("debate-log");
+      const line = document.createElement("div");
+      line.className = cls || "";
+      line.textContent = msg;
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function setBusy(on) {
+      document.getElementById("btn-run").disabled = on;
+    }
+
+    function selectedModels() {
+      return Array.from(document.getElementById("model-list").selectedOptions).map(o => o.value);
+    }
+
+    function selectedTests() {
+      const map = [
+        ["bakeoff", "t-bakeoff"],
+        ["deflect", "t-deflect"],
+        ["motion", "t-motion"],
+        ["probe", "t-probe"],
+        ["caesar", "t-caesar"],
+      ];
+      return map.filter(([_, id]) => document.getElementById(id).checked).map(([t]) => t);
+    }
+
+    function getMode() {
+      return document.getElementById("run-mode").value;
+    }
+
+    async function loadModels() {
+      const res = await fetch("/api/models");
+      modelsData = await res.json();
+      renderModelList();
+    }
+
+    function renderModelList() {
+      const filter = document.getElementById("catalog-filter").value;
+      const list = filter === "curated" ? modelsData.curated
+        : filter === "probe" ? modelsData.probe_picks
+        : modelsData.all;
+      const sel = document.getElementById("model-list");
+      const picked = new Set(selectedModels());
+      sel.innerHTML = "";
+      (list || []).forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.note ? `${m.name} — ${m.note}` : m.name;
+        if (picked.has(m.id)) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      if (!sel.selectedOptions.length && sel.options.length) {
+        sel.options[0].selected = true;
+        if (sel.options.length > 1) sel.options[1].selected = true;
+      }
+    }
+
+    function selectAllVisible() {
+      const sel = document.getElementById("model-list");
+      Array.from(sel.options).forEach(o => { o.selected = true; });
+    }
+
+    function clearModels() {
+      Array.from(document.getElementById("model-list").options).forEach(o => { o.selected = false; });
+    }
+
+    async function checkEnv() {
+      const res = await fetch("/api/key");
+      const data = await res.json();
+      const badge = document.getElementById("env-badge");
+      if (data.hasKey) {
+        badge.textContent = "API key set";
+        badge.className = "pill pill-pass";
+        document.getElementById("run-mode").value = "live";
+        if (data.maskedKey) document.getElementById("api-key").placeholder = data.maskedKey;
+      } else {
+        badge.textContent = "Offline stubs";
+        badge.className = "pill";
+        document.getElementById("run-mode").value = "offline";
+      }
+      if (data.runLive === "1") document.getElementById("run-mode").value = "live";
+    }
+
+    async function saveKey() {
+      const body = {
+        apiKey: document.getElementById("api-key").value.trim(),
+        primary: selectedModels()[0] || "",
+        modelA: selectedModels()[0] || "",
+        modelB: selectedModels()[1] || selectedModels()[0] || "",
+        runMode: getMode(),
+      };
+      await fetch("/api/key", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      log("Settings saved", "ok");
+      checkEnv();
+    }
+
+    async function loadPresets() {
+      const res = await fetch("/api/caesar/presets");
+      const data = await res.json();
+      caesarPresets = data.presets || {};
+      const cat = document.getElementById("caesar-cat");
+      cat.innerHTML = "";
+      (data.categories || Object.keys(caesarPresets)).forEach(c => {
+        const o = document.createElement("option");
+        o.value = c;
+        o.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+        cat.appendChild(o);
+      });
+      cat.value = "math";
+      refreshPresets();
+    }
+
+    function refreshPresets() {
+      const cat = document.getElementById("caesar-cat").value;
+      const sel = document.getElementById("caesar-preset");
+      sel.innerHTML = "";
+      (caesarPresets[cat] || []).forEach(p => {
+        const o = document.createElement("option");
+        o.value = p.id;
+        o.textContent = p.topic.slice(0, 70) + (p.topic.length > 70 ? "…" : "");
+        sel.appendChild(o);
+      });
+    }
+
+    function updateProgress(p) {
+      document.getElementById("progress-wrap").style.display = "block";
+      const pct = p.pct != null ? p.pct : Math.round(100 * (p.done || 0) / Math.max(p.total || 1, 1));
+      document.getElementById("progress-label").textContent =
+        (p.label || "run") + " · " + (p.done || 0) + "/" + (p.total || "?") + " (" + pct + "%)" +
+        (p.case_id ? " · " + p.case_id : "");
+      document.getElementById("progress-fill").style.width = pct + "%";
+    }
+
+    async function consumeSse(res, onEv) {
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop() || "";
+        for (const chunk of parts) {
+          const line = chunk.trim();
+          if (!line.startsWith("data:")) continue;
+          onEv(JSON.parse(line.slice(5).trim()));
+        }
+      }
+    }
+
+    async function runSelected() {
+      const models = selectedModels();
+      const tests = selectedTests();
+      if (!tests.length) { log("Pick at least one test", "err"); return; }
+      if (!models.length) { log("Pick at least one model", "err"); return; }
+
+      document.getElementById("log").innerHTML = "";
+      document.getElementById("progress-wrap").style.display = "none";
+      setBusy(true);
+      log(`Running ${tests.join(", ")} on ${models.length} model(s) (${getMode()})`, "warn");
+
+      try {
+        const res = await fetch("/api/run-batch-stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tests, models, mode: getMode() }),
+        });
+        await consumeSse(res, ev => {
+          if (ev.type === "phase") log("=== " + ev.label + " ===", "warn");
+          if (ev.type === "line" && ev.text) log(ev.text);
+          if (ev.type === "progress") updateProgress(ev);
+          if (ev.type === "progress_done") updateProgress({ ...ev, pct: 100 });
+          if (ev.type === "run_saved") log("Saved run #" + ev.run_id + " · " + ev.model, "ok");
+          if (ev.type === "error") log(ev.message, "err");
+          if (ev.type === "done") log(ev.message || "Finished", ev.code === 0 ? "ok" : "err");
+        });
+      } catch (e) {
+        log(String(e), "err");
+      } finally {
+        setBusy(false);
+        refreshHistory();
+        refreshChart();
+      }
+    }
+
+    async function runBaked() {
+      document.getElementById("log").innerHTML = "";
+      setBusy(true);
+      try {
+        const res = await fetch("/api/run-baked-stream", { method: "POST" });
+        await consumeSse(res, ev => {
+          if (ev.type === "phase") log("=== " + ev.label + " ===", "warn");
+          if (ev.type === "line" && ev.text) log(ev.text);
+          if (ev.type === "progress") updateProgress(ev);
+          if (ev.type === "done") log(ev.message || "Baked demo done", "ok");
+        });
+      } finally {
+        setBusy(false);
+        refreshHistory();
+        refreshChart();
+      }
+    }
+
+    async function runCaesarLive() {
+      document.getElementById("debate-log").innerHTML = "";
+      debateLog("Starting live debate…", "turn-j");
+      try {
+        const res = await fetch("/api/caesar/live-stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category: document.getElementById("caesar-cat").value,
+            preset_id: document.getElementById("caesar-preset").value,
+            max_rounds: parseInt(document.getElementById("caesar-rounds").value, 10),
+          }),
+        });
+        await consumeSse(res, ev => {
+          if (ev.type === "start") debateLog("Topic: " + ev.topic, "turn-j");
+          if (ev.type === "turn" && ev.turn) {
+            const t = ev.turn;
+            const sp = t.speaker || t.role || "?";
+            const cls = sp === "a" ? "turn-a" : sp === "b" ? "turn-b" : "turn-j";
+            debateLog("[" + sp + "] " + (t.text || t.content || "").slice(0, 800), cls);
+          }
+          if (ev.type === "done") debateLog("Done · winner: " + (ev.winner || "?"), "turn-j");
+          if (ev.type === "error") debateLog(ev.message, "turn-b");
+        });
+      } catch (e) {
+        debateLog(String(e), "turn-b");
+      }
+    }
+
+    async function refreshHistory() {
+      const res = await fetch("/api/runs?limit=40");
+      const rows = await res.json();
+      const tbody = document.getElementById("history-body");
+      tbody.innerHTML = "";
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.onclick = () => showRunDetail(r.id);
+        const gate = r.gate_pass === 1 ? '<span class="pill pill-pass">PASS</span>'
+          : r.gate_pass === 0 ? '<span class="pill pill-fail">FAIL</span>' : "—";
+        tr.innerHTML =
+          `<td>${(r.timestamp || "").slice(0, 19)}</td>` +
+          `<td>${r.demo}</td>` +
+          `<td title="${r.model}">${(r.model || "").split("/").pop()}</td>` +
+          `<td>${r.accuracy != null ? (r.accuracy * 100).toFixed(1) + "%" : "—"}</td>` +
+          `<td>${r.mean_latency_ms != null ? Math.round(r.mean_latency_ms) + "ms" : "—"}</td>` +
+          `<td>${r.total_cost_usd != null ? "$" + Number(r.total_cost_usd).toFixed(4) : "—"}</td>` +
+          `<td>${gate}</td>`;
+        tr.dataset.runId = r.id;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function showRunDetail(id) {
+      const res = await fetch("/api/runs/" + id);
+      const run = await res.json();
+      const box = document.getElementById("run-detail");
+      box.style.display = "block";
+      box.textContent = JSON.stringify(run.payload || run, null, 2);
+      highlightChartRun(id);
+    }
+
+    async function refreshChart() {
+      const res = await fetch("/api/runs/chart?demo=bakeoff_sweep");
+      let runs = await res.json();
+      if (!runs.length) {
+        const res2 = await fetch("/api/runs/chart?demo=bakeoff");
+        runs = await res2.json();
+      }
+      chartRuns = runs;
+      drawChart(runs);
+    }
+
+    function shortModel(m) {
+      if (!m) return "?";
+      const parts = m.split("/");
+      return parts[parts.length - 1].slice(0, 18);
+    }
+
+    function drawChart(runs) {
+      const svg = document.getElementById("chart");
+      svg.innerHTML = "";
+      if (!runs.length) {
+        svg.innerHTML = '<text x="400" y="140" text-anchor="middle" fill="#8b949e" font-size="14">Run a multi-model bakeoff sweep to see the chart</text>';
+        return;
+      }
+      const W = 800, H = 280, pad = { l: 48, r: 16, t: 16, b: 72 };
+      const innerW = W - pad.l - pad.r;
+      const innerH = H - pad.t - pad.b;
+      const n = runs.length;
+      const barW = Math.min(48, innerW / n - 8);
+      const gap = (innerW - barW * n) / Math.max(n - 1, 1);
+
+      runs.forEach((run, i) => {
+        const q = Number(run.accuracy) || 0;
+        const h = Math.max(4, q * innerH);
+        const x = pad.l + i * (barW + gap);
+        const y = pad.t + innerH - h;
+        const pass = run.gate_pass === 1;
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("class", "chart-bar");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barW);
+        rect.setAttribute("height", h);
+        rect.setAttribute("fill", pass ? "#238636" : "#58a6ff");
+        rect.setAttribute("rx", "3");
+        rect.dataset.idx = i;
+        rect.addEventListener("mouseenter", e => showTip(e, run));
+        rect.addEventListener("mousemove", e => moveTip(e));
+        rect.addEventListener("mouseleave", hideTip);
+        rect.addEventListener("click", () => showRunDetail(run.id));
+        svg.appendChild(rect);
+
+        const pct = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        pct.setAttribute("x", x + barW / 2);
+        pct.setAttribute("y", y - 4);
+        pct.setAttribute("text-anchor", "middle");
+        pct.setAttribute("fill", "#c9d1d9");
+        pct.setAttribute("font-size", "10");
+        pct.textContent = (q * 100).toFixed(0) + "%";
+        svg.appendChild(pct);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", x + barW / 2);
+        lbl.setAttribute("y", H - pad.b + 14);
+        lbl.setAttribute("text-anchor", "end");
+        lbl.setAttribute("fill", "#8b949e");
+        lbl.setAttribute("font-size", "9");
+        lbl.setAttribute("transform", `rotate(-35 ${x + barW / 2} ${H - pad.b + 14})`);
+        lbl.textContent = shortModel(run.model);
+        svg.appendChild(lbl);
+      });
+
+      const axis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axis.setAttribute("x1", pad.l);
+      axis.setAttribute("x2", W - pad.r);
+      axis.setAttribute("y1", pad.t + innerH);
+      axis.setAttribute("y2", pad.t + innerH);
+      axis.setAttribute("stroke", "#30363d");
+      svg.insertBefore(axis, svg.firstChild);
+    }
+
+    function showTip(e, run) {
+      const tip = document.getElementById("tooltip");
+      const cases = (run.payload && run.payload.cases) ? run.payload.cases.length : run.cases_count;
+      tip.innerHTML =
+        `<strong>${run.model}</strong>` +
+        `Quality: ${run.accuracy != null ? (run.accuracy * 100).toFixed(1) + "%" : "—"}<br>` +
+        `Latency: ${run.mean_latency_ms != null ? Math.round(run.mean_latency_ms) + " ms" : "—"}<br>` +
+        `Cost: $${Number(run.total_cost_usd || 0).toFixed(4)}<br>` +
+        `Cases: ${cases || "—"} · Gate: ${run.gate_pass === 1 ? "PASS" : run.gate_pass === 0 ? "FAIL" : "—"}<br>` +
+        `<span style="color:#8b949e">${(run.summary || "").slice(0, 120)}</span>`;
+      tip.style.display = "block";
+      moveTip(e);
+    }
+
+    function moveTip(e) {
+      const tip = document.getElementById("tooltip");
+      tip.style.left = (e.clientX + 12) + "px";
+      tip.style.top = (e.clientY + 12) + "px";
+    }
+
+    function hideTip() {
+      document.getElementById("tooltip").style.display = "none";
+    }
+
+    function highlightChartRun(id) {
+      chartRuns.forEach((r, i) => {
+        const bar = document.querySelector(`.chart-bar[data-idx="${i}"]`);
+        if (bar) bar.setAttribute("opacity", r.id === id ? "1" : "0.45");
+      });
+    }
+  </script>
+</body>
+</html>

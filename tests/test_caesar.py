@@ -14,9 +14,9 @@ def _clients(**kw):
     return build_clients(live=False, **kw)
 
 
-def test_six_topics_no_pii() -> None:
+def test_ten_topics_no_pii() -> None:
     cases = load_cases()
-    assert len(cases) == 6
+    assert len(cases) == 10
     assert {c["expected_end"] for c in cases} <= {"concession", "max_rounds"}
     assert "concession" in {c["expected_end"] for c in cases}
     assert "max_rounds" in {c["expected_end"] for c in cases}
@@ -120,7 +120,7 @@ def test_scrub_no_api_keys_in_traces(tmp_path: Path) -> None:
 
 def test_offline_harness() -> None:
     summary = run_eval()
-    assert summary["n"] == 6
+    assert summary["n"] == 10
     assert summary["end_accuracy"] == 1.0
     assert summary["total_cost_usd"] == 0
     assert summary["concessions"] >= 1

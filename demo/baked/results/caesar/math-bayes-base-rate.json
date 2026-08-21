@@ -1,24 +1,24 @@
 {
-  "id": "cost-vs-quality",
-  "topic": "When OpenRouter omits usage.cost, should RouteKit invent a token-price estimate so dashboards look complete?",
-  "side_a": "Never estimate. Cost is usage.cost or 0. Honest zeros beat fake precision.",
-  "side_b": "Always fill in a made-up per-token price so finance is never looking at a zero.",
+  "id": "math-bayes-base-rate",
+  "topic": "In a screening test with 99% sensitivity, 99% specificity, and 1% disease prevalence, does a positive result mean ~50% or ~99% probability of disease?",
+  "side_a": "Bayes with base rates \u21d2 ~50%; ignoring prevalence is wrong.",
+  "side_b": "A 99% accurate test means positives are ~99% true positives.",
   "model_a": "stub/capable-a",
   "model_b": "stub/capable-b",
   "caesar_model": "stub/caesar",
-  "end": "max_rounds",
+  "end": "concession",
   "winner": "a",
-  "reason": "Reached max_rounds=2 without a concession.",
+  "reason": "B conceded the base-rate fallacy.",
   "scores": {
     "a": 3,
-    "b": 2
+    "b": 0
   },
   "rounds": 2,
   "max_rounds": 2,
-  "conceded_by": null,
+  "conceded_by": "b",
   "total_cost_usd": 0.0,
   "total_latency_ms": 14.0,
-  "wall_ms": 0.17,
+  "wall_ms": 0.2,
   "flags": [],
   "turns": [
     {
@@ -26,19 +26,19 @@
       "speaker": "a",
       "role": "debater",
       "model": "stub/capable-a",
-      "text": "If usage.cost is missing, the number is 0. Inventing a token price is fake precision finance will treat as real.",
+      "text": "With 1% prevalence, Bayes gives P(disease|+) \u2248 0.01\u00d70.99 / (0.01\u00d70.99 + 0.99\u00d70.01) \u2248 50%, not 99%.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 112,
+      "chars": 98,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices"
+        "positive with 1% prevalence \u2248 50%"
       ],
       "points": 2,
-      "grounding": 0.9,
+      "grounding": 0.93,
       "concession": false
     },
     {
@@ -46,19 +46,19 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.90. A: cost is usage.cost or 0.",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.93. A showed the Bayes calculation with base rate.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 65,
+      "chars": 84,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices"
+        "positive with 1% prevalence \u2248 50%"
       ],
       "points": 0,
-      "grounding": 0.9,
+      "grounding": 0.93,
       "concession": false,
       "flags": [],
       "winner_so_far": "a",
@@ -72,19 +72,19 @@
       "speaker": "b",
       "role": "debater",
       "model": "stub/capable-b",
-      "text": "Finance needs a number. A made-up per-token price keeps the dashboard from looking empty.",
+      "text": "A 99% accurate test means a positive is ~99% likely true. Base rates are a pedantic distraction.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 89,
+      "chars": 96,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "placeholder rates keep charts continuous"
+        "99% test means 99% positive"
       ],
-      "points": 1,
-      "grounding": 0.55,
+      "points": 0,
+      "grounding": 0.4,
       "concession": false
     },
     {
@@ -92,26 +92,26 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 2 \u2013 B 1. Latest: B. grounding=0.55. B wants a filled-in dashboard. Not a concession.",
+      "text": "A 2 \u2013 B 0. Latest: B. grounding=0.40. B still claims 99% without base rate.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 86,
+      "chars": 75,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "placeholder rates keep charts continuous"
+        "positive with 1% prevalence \u2248 50%",
+        "99% test means 99% positive"
       ],
       "points": 0,
-      "grounding": 0.55,
+      "grounding": 0.4,
       "concession": false,
       "flags": [],
       "winner_so_far": "a",
       "scores": {
         "a": 2,
-        "b": 1
+        "b": 0
       }
     },
     {
@@ -119,20 +119,19 @@
       "speaker": "a",
       "role": "debater",
       "model": "stub/capable-a",
-      "text": "Offline stubs already report 0. Live runs should do the same when OpenRouter omits cost. Dashboards can show unknown; they cannot show a guess.",
+      "text": "The numerator is true positives; the denominator includes false positives from the 99% healthy population.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 143,
+      "chars": 106,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed"
+        "false positives dominate at low prevalence"
       ],
       "points": 1,
-      "grounding": 0.88,
+      "grounding": 0.9,
       "concession": false
     },
     {
@@ -140,27 +139,26 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 3 \u2013 B 1. Latest: A. grounding=0.88. A restated honest zeros. Match continues.",
+      "text": "A 3 \u2013 B 0. Latest: A. grounding=0.90. A clarified false positives in the denominator.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 79,
+      "chars": 85,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed",
-        "placeholder rates keep charts continuous"
+        "false positives dominate at low prevalence",
+        "99% test means 99% positive"
       ],
       "points": 0,
-      "grounding": 0.88,
+      "grounding": 0.9,
       "concession": false,
       "flags": [],
       "winner_so_far": "a",
       "scores": {
         "a": 3,
-        "b": 1
+        "b": 0
       }
     },
     {
@@ -168,49 +166,46 @@
       "speaker": "b",
       "role": "debater",
       "model": "stub/capable-b",
-      "text": "Zeros look like a bug. Filling a placeholder rate is how ops teams keep charts continuous even when the provider is quiet.",
+      "text": "I concede: ignoring prevalence is the base-rate fallacy; with 1% disease rate a positive is about 50%.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 122,
+      "chars": 102,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "placeholder rates keep charts continuous",
-        "zeros look like a bug"
+        "99% test means 99% positive"
       ],
-      "points": 1,
-      "grounding": 0.5,
-      "concession": false
+      "points": 0,
+      "grounding": 0.91,
+      "concession": true
     },
     {
       "round": 2,
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 3 \u2013 B 2. Latest: B. grounding=0.50. Still no concession. Score is not decisive.",
+      "text": "A 3 \u2013 B 0. Latest: B. grounding=0.91. B conceded the base-rate fallacy.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 81,
+      "chars": 71,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed",
-        "placeholder rates keep charts continuous",
-        "zeros look like a bug"
+        "false positives dominate at low prevalence",
+        "99% test means 99% positive"
       ],
       "points": 0,
-      "grounding": 0.5,
-      "concession": false,
+      "grounding": 0.91,
+      "concession": true,
       "flags": [],
       "winner_so_far": "a",
       "scores": {
         "a": 3,
-        "b": 2
+        "b": 0
       }
     }
   ],

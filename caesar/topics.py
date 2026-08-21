@@ -32,6 +32,30 @@ TOPIC_PRESETS: dict[str, list[dict[str, Any]]] = {
             "side_a": "Standard order-of-operations rules are unambiguous when taught with grouping.",
             "side_b": "Ambiguous expressions show PEMDAS is underspecified without explicit grouping.",
         },
+        {
+            "id": "math-bayes-base-rate",
+            "topic": "Resolved: in a disease test with 99% sensitivity, 99% specificity, and 1% prevalence, a positive result implies ~50% chance of disease (not 99%).",
+            "side_a": "Bayes' theorem with base rates yields ~50%; ignoring prevalence is the base-rate fallacy.",
+            "side_b": "A 99% accurate test means a positive is ~99% likely to be a true positive.",
+        },
+        {
+            "id": "math-primes-infinitude",
+            "topic": "Resolved: there are infinitely many prime numbers.",
+            "side_a": "Euclid's proof by contradiction shows no finite list of primes can be complete.",
+            "side_b": "Primes thin out fast enough that the set could be finite — intuition beats proof.",
+        },
+        {
+            "id": "math-derivative-power",
+            "topic": "Resolved: d/dx(x^n) = n·x^(n-1) for positive integers n, proven by the limit definition (not just pattern matching).",
+            "side_a": "The binomial theorem + limit definition gives the power rule rigorously.",
+            "side_b": "The power rule is a mnemonic pattern; the limit definition is unnecessary pedantry.",
+        },
+        {
+            "id": "math-monty-hall",
+            "topic": "Resolved: on Monty Hall (3 doors, host opens a goat), switching doors wins 2/3 of the time.",
+            "side_a": "Conditional probability: switching wins iff your first pick was wrong (2/3).",
+            "side_b": "Two remaining doors ⇒ 50/50; switching cannot beat symmetry.",
+        },
     ],
     "routekit": [
         {

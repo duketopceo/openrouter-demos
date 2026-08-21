@@ -148,6 +148,142 @@
         "prompt_tokens": 100,
         "completion_tokens": 80
       }
+    ],
+    "math-bayes-base-rate": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A showed the Bayes calculation with base rate.\", \"claims_a\": [\"positive with 1% prevalence ≈ 50%\"], \"claims_b\": [], \"grounding\": 0.93}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"B still claims 99% without base rate.\", \"claims_a\": [\"positive with 1% prevalence ≈ 50%\"], \"claims_b\": [\"99% test means 99% positive\"], \"grounding\": 0.4}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A clarified false positives in the denominator.\", \"claims_a\": [\"false positives dominate at low prevalence\"], \"claims_b\": [\"99% test means 99% positive\"], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded the base-rate fallacy.\", \"claims_a\": [\"false positives dominate at low prevalence\"], \"claims_b\": [\"99% test means 99% positive\"], \"grounding\": 0.91}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "math-monty-hall": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A explained conditional probability on Monty Hall.\", \"claims_a\": [\"switch wins 2/3\"], \"claims_b\": [], \"grounding\": 0.92}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"B claims 50/50 symmetry.\", \"claims_a\": [\"switch wins 2/3\"], \"claims_b\": [\"two doors means 50/50\"], \"grounding\": 0.35}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A labeled the 1/3 vs 2/3 split.\", \"claims_a\": [\"host reveal leaves 2/3 on switch door\"], \"claims_b\": [\"two doors means 50/50\"], \"grounding\": 0.91}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded switching is 2/3.\", \"claims_a\": [\"host reveal leaves 2/3 on switch door\"], \"claims_b\": [\"two doors means 50/50\"], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "math-primes-infinitude": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A cited Euclid's proof.\", \"claims_a\": [\"finite list cannot contain all primes\"], \"claims_b\": [], \"grounding\": 0.94}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"B still claims finiteness is plausible.\", \"claims_a\": [\"finite list cannot contain all primes\"], \"claims_b\": [\"primes might be finite\"], \"grounding\": 0.35}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A restated the construction.\", \"claims_a\": [\"N+1 factor is outside the list\"], \"claims_b\": [\"primes might be finite\"], \"grounding\": 0.92}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 0}, \"points_this_round\": {\"a\": 0, \"b\": 0}, \"concession_detected\": true, \"end\": true, \"reason\": \"B conceded infinitude of primes.\", \"claims_a\": [\"N+1 factor is outside the list\"], \"claims_b\": [\"primes might be finite\"], \"grounding\": 0.9}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
+    ],
+    "math-derivative-power": [
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 0}, \"points_this_round\": {\"a\": 2, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"A gave the limit proof sketch.\", \"claims_a\": [\"power rule from binomial theorem\"], \"claims_b\": [], \"grounding\": 0.88}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 2, \"b\": 1}, \"points_this_round\": {\"a\": 0, \"b\": 1}, \"concession_detected\": false, \"end\": false, \"reason\": \"B prefers mnemonic; not a concession.\", \"claims_a\": [\"power rule from binomial theorem\"], \"claims_b\": [\"pattern matching suffices\"], \"grounding\": 0.55}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 1}, \"points_this_round\": {\"a\": 1, \"b\": 0}, \"concession_detected\": false, \"end\": false, \"reason\": \"Debate continues without concession.\", \"claims_a\": [\"proof validates beyond integers\"], \"claims_b\": [\"pattern matching suffices\"], \"grounding\": 0.85}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      },
+      {
+        "content": "{\"winner_so_far\": \"a\", \"scores\": {\"a\": 3, \"b\": 2}, \"points_this_round\": {\"a\": 0, \"b\": 1}, \"concession_detected\": false, \"end\": false, \"reason\": \"Still no concession; max rounds expected.\", \"claims_a\": [\"proof validates beyond integers\"], \"claims_b\": [\"engineers use mnemonic\"], \"grounding\": 0.5}",
+        "tool_calls": [],
+        "latency_ms": 1.5,
+        "cost_usd": 0.0,
+        "prompt_tokens": 100,
+        "completion_tokens": 80
+      }
     ]
   }
 }

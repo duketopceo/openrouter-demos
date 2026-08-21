@@ -13,10 +13,10 @@ def _progress_enabled(enabled: bool | None) -> bool:
         return enabled
     if os.environ.get("NO_PROGRESS", "0") == "1":
         return False
-    if os.environ.get("PYTEST_CURRENT_TEST") is not None:
-        return False
     if os.environ.get("PROGRESS", "0") == "1":
         return True
+    if os.environ.get("PYTEST_CURRENT_TEST") is not None:
+        return False
     return sys.stderr.isatty()
 
 

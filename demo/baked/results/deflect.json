@@ -70,7 +70,7 @@
         "keys.rotate"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.15,
+      "latency_ms": 0.11,
       "model": "stub/capable",
       "reason": "faq"
     },
@@ -90,7 +90,7 @@
         "models.streaming"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.08,
+      "latency_ms": 0.07,
       "model": "stub/capable",
       "reason": "faq"
     },
@@ -112,7 +112,7 @@
         "keys.create"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.09,
+      "latency_ms": 0.08,
       "model": "stub/capable",
       "reason": "faq"
     },
@@ -156,7 +156,7 @@
         "account.delete"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.08,
+      "latency_ms": 0.15,
       "model": "stub/capable",
       "reason": "faq"
     },
@@ -178,7 +178,7 @@
         "billing.refunds"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.08,
+      "latency_ms": 0.09,
       "model": "stub/capable",
       "reason": "missing info"
     },
@@ -200,7 +200,7 @@
         "billing.refunds"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.09,
+      "latency_ms": 0.1,
       "model": "stub/capable",
       "reason": "missing info"
     },
@@ -267,7 +267,7 @@
         "account.delete"
       ],
       "cost_usd": 0.0,
-      "latency_ms": 0.07,
+      "latency_ms": 0.06,
       "model": "stub/capable",
       "reason": "Escalated: ticket is angry, legal, a prompt-injection attempt, a refund demand, and/or an account-change request. Auto-replies are not sent."
     },

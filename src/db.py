@@ -72,14 +72,21 @@ def generate_quick_summary(demo: str, payload: dict[str, Any]) -> str:
 def log_run(
     demo: str,
     payload: dict[str, Any],
-    db_path: Path = DB_PATH
+    db_path: Path | None = None
 ) -> int:
+    if db_path is None:
+        db_path = DB_PATH
     init_db(db_path)
     
     model = str(payload.get("model") or payload.get("a", {}).get("model") or "unknown")
     live = 1 if payload.get("live") or os.environ.get("RUN_LIVE") == "1" else 0
     cases_count = int(payload.get("n") or payload.get("a", {}).get("n") or 0)
-    accuracy = payload.get("action_accuracy") or payload.get("end_accuracy") or payload.get("a", {}).get("quality")
+    accuracy = (
+        payload.get("action_accuracy")
+        or payload.get("end_accuracy")
+        or payload.get("quality")
+        or payload.get("a", {}).get("quality")
+    )
     guardrail = payload.get("guardrail_pass_rate")
     mean_lat = payload.get("mean_latency_ms") or payload.get("a", {}).get("mean_latency_ms")
     mean_ttft = payload.get("mean_ttft_ms") or payload.get("a", {}).get("mean_ttft_ms")
@@ -87,7 +94,9 @@ def log_run(
     cost = payload.get("total_cost_usd") or payload.get("a", {}).get("total_cost_usd")
     
     gate_pass = None
-    if "a" in payload and "gate" in payload["a"]:
+    if "gate" in payload and isinstance(payload["gate"], dict):
+        gate_pass = 1 if payload["gate"].get("pass") else 0
+    elif "a" in payload and "gate" in payload["a"]:
         gate_pass = 1 if payload["a"]["gate"]["pass"] else 0
         
     summary_text = generate_quick_summary(demo, payload)
@@ -115,3 +124,53 @@ def get_recent_runs(limit: int = 20, db_path: Path = DB_PATH) -> list[dict[str, 
         cur = conn.cursor()
         cur.execute("SELECT * FROM run_logs ORDER BY id DESC LIMIT ?", (limit,))
         return [dict(row) for row in cur.fetchall()]
+
+
+def get_runs_for_chart(
+    *,
+    demo: str | None = None,
+    limit: int = 30,
+    db_path: Path = DB_PATH,
+) -> list[dict[str, Any]]:
+    """Rows shaped for the comparison chart (bakeoff / bakeoff_sweep)."""
+    init_db(db_path)
+    demos = ("bakeoff", "bakeoff_sweep") if demo is None else (demo,)
+    placeholders = ",".join("?" * len(demos))
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            f"""
+            SELECT id, timestamp, demo, model, live, cases_count, accuracy,
+                   mean_latency_ms, mean_ttft_ms, mean_tokens_per_sec,
+                   total_cost_usd, gate_pass, summary, raw_payload
+            FROM run_logs
+            WHERE demo IN ({placeholders})
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (*demos, limit),
+        ).fetchall()
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("raw_payload") or "{}")
+        except json.JSONDecodeError:
+            item["payload"] = {}
+        out.append(item)
+    return list(reversed(out))
+
+
+def get_run_by_id(run_id: int, db_path: Path = DB_PATH) -> dict[str, Any] | None:
+    init_db(db_path)
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM run_logs WHERE id = ?", (run_id,)).fetchone()
+        if not row:
+            return None
+        item = dict(row)
+        try:
+            item["payload"] = json.loads(item.pop("raw_payload") or "{}")
+        except json.JSONDecodeError:
+            item["payload"] = {}
+        return item

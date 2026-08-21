@@ -18,7 +18,7 @@
   "conceded_by": "b",
   "total_cost_usd": 0.0,
   "total_latency_ms": 9.0,
-  "wall_ms": 0.27,
+  "wall_ms": 0.3,
   "flags": [],
   "turns": [
     {

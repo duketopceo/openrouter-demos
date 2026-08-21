@@ -114,6 +114,78 @@
         "content": "Offline stubs already report 0. Live runs should do the same when OpenRouter omits cost. Dashboards can show unknown; they cannot show a guess.",
         "tool_calls": []
       }
+    ],
+    "math-bayes-base-rate": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "With 1% prevalence, Bayes gives P(disease|+) ≈ 0.01×0.99 / (0.01×0.99 + 0.99×0.01) ≈ 50%, not 99%.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "The numerator is true positives; the denominator includes false positives from the 99% healthy population.",
+        "tool_calls": []
+      }
+    ],
+    "math-monty-hall": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Switching wins when your first pick was wrong (2/3). The host always opens a goat, so the remaining door is not 50/50.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Label doors: your pick wins 1/3. Host opens a goat from the other two; the unopened door holds the car 2/3 of the time.",
+        "tool_calls": []
+      }
+    ],
+    "math-primes-infinitude": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Euclid: multiply all primes in a finite list, add 1 — the result has a prime factor not in the list.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "That construction works for any finite candidate list — so no finite list can be complete.",
+        "tool_calls": []
+      }
+    ],
+    "math-derivative-power": [
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "From the limit definition and binomial theorem, d/dx x^n = n x^(n-1) for positive integer n.",
+        "tool_calls": []
+      },
+      {
+        "latency_ms": 2.0,
+        "cost_usd": 0.0,
+        "prompt_tokens": 80,
+        "completion_tokens": 40,
+        "content": "Applied work can memorize the pattern, but the limit proof is what makes the rule valid beyond integers.",
+        "tool_calls": []
+      }
     ]
   }
 }

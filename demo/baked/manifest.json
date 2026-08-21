@@ -8,12 +8,17 @@
     "caesar/fallback-vs-single.json",
     "caesar/jailbreak-judge.json",
     "caesar/matches.jsonl",
+    "caesar/math-bayes-base-rate.json",
+    "caesar/math-derivative-power.json",
+    "caesar/math-monty-hall.json",
+    "caesar/math-primes-infinitude.json",
     "caesar/routing-vs-direct.json",
     "caesar/tools-vs-prose.json",
     "deflect.json",
+    "guardrail_probe.json",
     "motion.json",
     "runs.db"
   ],
-  "event_count": 213,
+  "event_count": 265,
   "exit_code": 0
 }

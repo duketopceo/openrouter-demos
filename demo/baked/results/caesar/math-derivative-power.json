@@ -1,8 +1,8 @@
 {
-  "id": "cost-vs-quality",
-  "topic": "When OpenRouter omits usage.cost, should RouteKit invent a token-price estimate so dashboards look complete?",
-  "side_a": "Never estimate. Cost is usage.cost or 0. Honest zeros beat fake precision.",
-  "side_b": "Always fill in a made-up per-token price so finance is never looking at a zero.",
+  "id": "math-derivative-power",
+  "topic": "Should d/dx(x^n)=n\u00b7x^(n-1) be justified from the limit definition or accepted as a pattern?",
+  "side_a": "Derive it from limits + binomial theorem for rigor.",
+  "side_b": "Pattern matching is enough for applied work.",
   "model_a": "stub/capable-a",
   "model_b": "stub/capable-b",
   "caesar_model": "stub/caesar",
@@ -18,7 +18,7 @@
   "conceded_by": null,
   "total_cost_usd": 0.0,
   "total_latency_ms": 14.0,
-  "wall_ms": 0.17,
+  "wall_ms": 0.19,
   "flags": [],
   "turns": [
     {
@@ -26,19 +26,19 @@
       "speaker": "a",
       "role": "debater",
       "model": "stub/capable-a",
-      "text": "If usage.cost is missing, the number is 0. Inventing a token price is fake precision finance will treat as real.",
+      "text": "From the limit definition and binomial theorem, d/dx x^n = n x^(n-1) for positive integer n.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 112,
+      "chars": 92,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices"
+        "power rule from binomial theorem"
       ],
       "points": 2,
-      "grounding": 0.9,
+      "grounding": 0.88,
       "concession": false
     },
     {
@@ -46,19 +46,19 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.90. A: cost is usage.cost or 0.",
+      "text": "A 2 \u2013 B 0. Latest: A. grounding=0.88. A gave the limit proof sketch.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 65,
+      "chars": 68,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices"
+        "power rule from binomial theorem"
       ],
       "points": 0,
-      "grounding": 0.9,
+      "grounding": 0.88,
       "concession": false,
       "flags": [],
       "winner_so_far": "a",
@@ -72,16 +72,16 @@
       "speaker": "b",
       "role": "debater",
       "model": "stub/capable-b",
-      "text": "Finance needs a number. A made-up per-token price keeps the dashboard from looking empty.",
+      "text": "The power rule is a pattern you memorize; the limit definition is unnecessary pedantry.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 89,
+      "chars": 87,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "placeholder rates keep charts continuous"
+        "pattern matching suffices"
       ],
       "points": 1,
       "grounding": 0.55,
@@ -92,17 +92,17 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 2 \u2013 B 1. Latest: B. grounding=0.55. B wants a filled-in dashboard. Not a concession.",
+      "text": "A 2 \u2013 B 1. Latest: B. grounding=0.55. B prefers mnemonic; not a concession.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 86,
+      "chars": 75,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "placeholder rates keep charts continuous"
+        "power rule from binomial theorem",
+        "pattern matching suffices"
       ],
       "points": 0,
       "grounding": 0.55,
@@ -119,20 +119,19 @@
       "speaker": "a",
       "role": "debater",
       "model": "stub/capable-a",
-      "text": "Offline stubs already report 0. Live runs should do the same when OpenRouter omits cost. Dashboards can show unknown; they cannot show a guess.",
+      "text": "Applied work can memorize the pattern, but the limit proof is what makes the rule valid beyond integers.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 143,
+      "chars": 104,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed"
+        "proof validates beyond integers"
       ],
       "points": 1,
-      "grounding": 0.88,
+      "grounding": 0.85,
       "concession": false
     },
     {
@@ -140,21 +139,20 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 3 \u2013 B 1. Latest: A. grounding=0.88. A restated honest zeros. Match continues.",
+      "text": "A 3 \u2013 B 1. Latest: A. grounding=0.85. Debate continues without concession.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 79,
+      "chars": 74,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed",
-        "placeholder rates keep charts continuous"
+        "proof validates beyond integers",
+        "pattern matching suffices"
       ],
       "points": 0,
-      "grounding": 0.88,
+      "grounding": 0.85,
       "concession": false,
       "flags": [],
       "winner_so_far": "a",
@@ -168,17 +166,16 @@
       "speaker": "b",
       "role": "debater",
       "model": "stub/capable-b",
-      "text": "Zeros look like a bug. Filling a placeholder rate is how ops teams keep charts continuous even when the provider is quiet.",
+      "text": "Engineers use the mnemonic and move on. Proofs don't change the answer in practice.",
       "latency_ms": 2.0,
       "prompt_tokens": 80,
       "completion_tokens": 40,
       "cost_usd": 0.0,
-      "chars": 122,
+      "chars": 83,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "placeholder rates keep charts continuous",
-        "zeros look like a bug"
+        "engineers use mnemonic"
       ],
       "points": 1,
       "grounding": 0.5,
@@ -189,19 +186,17 @@
       "speaker": "caesar",
       "role": "judge",
       "model": "stub/caesar",
-      "text": "A 3 \u2013 B 2. Latest: B. grounding=0.50. Still no concession. Score is not decisive.",
+      "text": "A 3 \u2013 B 2. Latest: B. grounding=0.50. Still no concession; max rounds expected.",
       "latency_ms": 1.5,
       "prompt_tokens": 100,
       "completion_tokens": 80,
       "cost_usd": 0.0,
-      "chars": 81,
+      "chars": 79,
       "searched": false,
       "info_gathered": [],
       "claims": [
-        "do not estimate token prices",
-        "unknown is allowed",
-        "placeholder rates keep charts continuous",
-        "zeros look like a bug"
+        "proof validates beyond integers",
+        "engineers use mnemonic"
       ],
       "points": 0,
       "grounding": 0.5,

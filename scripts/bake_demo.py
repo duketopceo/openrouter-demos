@@ -40,6 +40,7 @@ def main() -> int:
         ("GTM Motion", [PYTHON, "-m", "motion.harness"]),
         ("Provider Ops Bakeoff", [PYTHON, "-m", "bakeoff.runner"]),
         ("Caesar Debate", [PYTHON, "-m", "caesar.harness"]),
+        ("Guardrail Probe", [PYTHON, "-m", "probe.harness"]),
     ]
 
     results_dir = ROOT / "results"

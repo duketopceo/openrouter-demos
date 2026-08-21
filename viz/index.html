@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenRouter Observability — Three Views</title>
+  <style>
+    :root {
+      --page: #050505;
+      --card: #0a0a0a;
+      --chart: #000000;
+      --border: #1a1a1a;
+      --text: #a3a3a3;
+      --heading: #fafafa;
+      --line-1: #00e5ff;
+      --line-2: #ff2d95;
+      --line-3: #ffe600;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      line-height: 1.4;
+    }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { margin: 0 0 6px; color: var(--heading); font-size: 16px; font-weight: 600; letter-spacing: 0.04em; }
+    header p { margin: 0; font-size: 11px; max-width: 720px; color: #666; }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+    }
+    .card h2 {
+      margin: 0 0 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--heading);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .card .sub { margin: 0 0 10px; font-size: 10px; color: #555; }
+    .chart-wrap {
+      flex: 1;
+      background: var(--chart);
+      border-radius: 2px;
+      position: relative;
+      min-height: 200px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 200px;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 10px;
+      color: #777;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch {
+      width: 18px;
+      height: 0;
+      border-top: 2px solid;
+      display: inline-block;
+    }
+    footer {
+      grid-column: 1 / -1;
+      font-size: 10px;
+      color: #444;
+      padding: 8px 0 4px;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--line-1); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OpenRouter · gateway observability</h1>
+    <p>Three line views on a black field — tokens, bakeoff economics, routing depth. No transformer internals.</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>01 · token envelope</h2>
+      <p class="sub">prompt vs completion · usage.*</p>
+      <div class="chart-wrap"><canvas id="chartTokens"></canvas></div>
+      <div class="legend" id="legendTokens"></div>
+    </section>
+
+    <section class="card">
+      <h2>02 · provider bakeoff</h2>
+      <p class="sub">model A vs B · quality / latency / cost</p>
+      <div class="chart-wrap"><canvas id="chartBakeoff"></canvas></div>
+      <div class="legend" id="legendBakeoff"></div>
+    </section>
+
+    <section class="card">
+      <h2>03 · tool routing</h2>
+      <p class="sub">turn depth · tokens · tool calls</p>
+      <div class="chart-wrap"><canvas id="chartRouting"></canvas></div>
+      <div class="legend" id="legendRouting"></div>
+    </section>
+
+    <footer>
+      OpenRouter returns I/O envelopes only —
+      <a href="/">dashboard</a> ·
+      docs/OPENROUTER_OBSERVABILITY.md
+    </footer>
+  </main>
+  <script>
+    const COLORS = ["#00e5ff", "#ff2d95", "#ffe600"];
+
+    function setupCanvas(el, h = 200) {
+      const dpr = window.devicePixelRatio || 1;
+      const w = el.clientWidth || 320;
+      el.width = w * dpr;
+      el.height = h * dpr;
+      const ctx = el.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, w, h };
+    }
+
+    function drawGrid(ctx, w, h, pad) {
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#111111";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.t + ((h - pad.t - pad.b) * i) / 4;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(w - pad.r, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawLines(ctx, w, h, pad, series) {
+      const allVals = series.flatMap(s => s.values);
+      const max = Math.max(...allVals, 1e-9);
+      const min = Math.min(...allVals, 0);
+      const range = max - min || 1;
+      const n = Math.max(...series.map(s => s.values.length), 2);
+      const plotW = w - pad.l - pad.r;
+      const plotH = h - pad.t - pad.b;
+
+      series.forEach((s, si) => {
+        if (!s.values.length) return;
+        ctx.strokeStyle = s.color || COLORS[si % COLORS.length];
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        s.values.forEach((v, i) => {
+          const x = pad.l + (i / Math.max(n - 1, 1)) * plotW;
+          const y = pad.t + plotH - ((v - min) / range) * plotH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      });
+    }
+
+    function renderLegend(el, items) {
+      el.innerHTML = items.map(it =>
+        `<span><i class="swatch" style="border-color:${it.color}"></i>${it.label}</span>`
+      ).join("");
+    }
+
+    function drawTokens(cases) {
+      const el = document.getElementById("chartTokens");
+      const { ctx, w, h } = setupCanvas(el);
+      const pad = { l: 28, r: 12, t: 14, b: 22 };
+      drawGrid(ctx, w, h, pad);
+      const prompt = cases.map(c => c.prompt_tokens || 0);
+      const completion = cases.map(c => c.completion_tokens || 0);
+      drawLines(ctx, w, h, pad, [
+        { label: "prompt", color: COLORS[0], values: prompt },
+        { label: "completion", color: COLORS[1], values: completion },
+      ]);
+      renderLegend(document.getElementById("legendTokens"), [
+        { color: COLORS[0], label: "prompt_tokens" },
+        { color: COLORS[1], label: "completion_tokens" },
+      ]);
+    }
+
+    function drawBakeoff(comp, casesA, casesB) {
+      const el = document.getElementById("chartBakeoff");
+      const { ctx, w, h } = setupCanvas(el);
+      const pad = { l: 28, r: 12, t: 14, b: 22 };
+      drawGrid(ctx, w, h, pad);
+
+      let series;
+      if (casesA.length && casesB.length) {
+        series = [
+          { color: COLORS[0], values: casesA.map(c => c.quality ?? c.latency_ms ?? 0) },
+          { color: COLORS[1], values: casesB.map(c => c.quality ?? c.latency_ms ?? 0) },
+        ];
+        renderLegend(document.getElementById("legendBakeoff"), [
+          { color: COLORS[0], label: (comp.a?.model || "model A").slice(0, 22) },
+          { color: COLORS[1], label: (comp.b?.model || "model B").slice(0, 22) },
+        ]);
+      } else {
+        const a = comp.a || {}, b = comp.b || {};
+        series = [
+          { color: COLORS[0], values: [a.quality || 0, (a.mean_latency_ms || 0) / 100, (a.total_cost_usd || 0) * 100] },
+          { color: COLORS[1], values: [b.quality || 0, (b.mean_latency_ms || 0) / 100, (b.total_cost_usd || 0) * 100] },
+          { color: COLORS[2], values: [a.mean_ttft_ms || 0, b.mean_ttft_ms || 0, ((a.mean_tokens_per_sec || 0) + (b.mean_tokens_per_sec || 0)) / 2] },
+        ];
+        renderLegend(document.getElementById("legendBakeoff"), [
+          { color: COLORS[0], label: "A · quality / lat / $" },
+          { color: COLORS[1], label: "B · quality / lat / $" },
+          { color: COLORS[2], label: "TTFT + TPS blend" },
+        ]);
+      }
+      drawLines(ctx, w, h, pad, series);
+    }
+
+    function drawRouting(flow) {
+      const el = document.getElementById("chartRouting");
+      const { ctx, w, h } = setupCanvas(el);
+      const pad = { l: 28, r: 12, t: 14, b: 22 };
+      drawGrid(ctx, w, h, pad);
+
+      const tokens = flow.map(n => Number(n.tokens) || 0);
+      const tools = flow.map(n => (n.tool_calls && n.tool_calls.length) ? n.tool_calls.length : 0);
+      const depth = flow.map((_, i) => i + 1);
+
+      drawLines(ctx, w, h, pad, [
+        { color: COLORS[0], values: tokens.length ? tokens : [0, 40, 38, 52] },
+        { color: COLORS[1], values: tools.length ? tools : [0, 1, 0, 1] },
+        { color: COLORS[2], values: depth.length ? depth : [1, 2, 3, 4] },
+      ]);
+      renderLegend(document.getElementById("legendRouting"), [
+        { color: COLORS[0], label: "completion tokens" },
+        { color: COLORS[1], label: "tool_calls count" },
+        { color: COLORS[2], label: "turn index" },
+      ]);
+    }
+
+    async function load() {
+      const res = await fetch("/api/viz-data");
+      const data = await res.json();
+      drawTokens(data.token_cases || []);
+      drawBakeoff(
+        data.bakeoff_compare || {},
+        data.bakeoff_cases_a || [],
+        data.bakeoff_cases_b || []
+      );
+      drawRouting(data.tool_flow || []);
+    }
+
+    load();
+    window.addEventListener("resize", load);
+  </script>
+</body>
+</html>

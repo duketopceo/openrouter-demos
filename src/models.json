@@ -2237,5 +2237,37 @@
       "name": "Perplexity \u2014 perplexity/sonar-reasoning",
       "provider": "Perplexity"
     }
+  ],
+  "probe_picks": [
+    {
+      "id": "anthropic/claude-3.5-sonnet",
+      "name": "Anthropic \u2014 Claude 3.5 Sonnet (strict frontier)",
+      "provider": "Anthropic",
+      "note": "Strong refusals; good judge baseline"
+    },
+    {
+      "id": "nvidia/nemotron-3.5-lightning",
+      "name": "Nvidia \u2014 Nemotron 3.5 Lightning (fast OSS)",
+      "provider": "Nvidia",
+      "note": "Default primary; latency baseline"
+    },
+    {
+      "id": "nousresearch/hermes-3-llama-3.1-405b",
+      "name": "Nous \u2014 Hermes 3 405B (uncensored-tuned)",
+      "provider": "Nousresearch",
+      "note": "Contrast for guardrail probe"
+    },
+    {
+      "id": "meta-llama/llama-3.3-70b-instruct",
+      "name": "Meta \u2014 Llama 3.3 70B (OSS comparator)",
+      "provider": "Meta-llama",
+      "note": "General open-weight A/B"
+    },
+    {
+      "id": "openai/gpt-4o-mini",
+      "name": "Openai \u2014 GPT-4o mini (cheap frontier)",
+      "provider": "Openai",
+      "note": "Often upstream-filtered on jailbreaks"
+    }
   ]
 }

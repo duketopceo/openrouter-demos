@@ -37,6 +37,29 @@
       padding: 6px 12px; border-radius: 4px; cursor: pointer; font: inherit;
     }
     button:hover { border-color: var(--c); }
+    .sel, select {
+      background: #161a22;
+      color: #e8e4d9;
+      border: 1px solid #2a2f3a;
+      padding: 6px 28px 6px 10px;
+      border-radius: 4px;
+      font: inherit;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    .sel-wrap { position: relative; display: inline-block; }
+    .sel-wrap::after {
+      content: "▾";
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 10px;
+    }
+    html { color-scheme: dark; }
     .meta { color: var(--muted); }
     .meta strong { color: var(--ink); font-weight: 600; }
     main { max-width: 860px; margin: 0 auto; padding: 22px 18px 80px; }
@@ -97,21 +120,30 @@
   <div class="bar live-bar" id="live-bar">
     <strong style="color:var(--c);">Live debate</strong>
     <label>Category
-      <select id="live-category" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px;">
+      <span class="sel-wrap"><select id="live-category" class="sel">
         <option value="english">English</option>
         <option value="math">Math</option>
         <option value="routekit">RouteKit</option>
-      </select>
+      </select></span>
     </label>
     <label>Preset
-      <select id="live-preset" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px; min-width:180px;"></select>
+      <span class="sel-wrap"><select id="live-preset" class="sel" style="min-width:200px;"></select></span>
     </label>
-    <label>Rounds <input id="live-rounds" type="number" min="1" max="12" value="3" style="width:48px; background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px; border-radius:4px;" /></label>
+    <label>Rounds
+      <span class="sel-wrap"><select id="live-rounds" class="sel" style="width:56px;">
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select></span>
+    </label>
     <button type="button" id="live-start">Start live debate</button>
     <span class="meta" id="live-status"></span>
   </div>
   <div class="bar">
-    <label>Select Trace: <select id="trace-select" style="background:#161a22; color:#e8e4d9; border:1px solid #2a2f3a; padding:4px 8px; border-radius:4px;"><option value="">Loading traces...</option></select></label>
+    <label>Select Trace:
+      <span class="sel-wrap"><select id="trace-select" class="sel"><option value="">Loading traces...</option></select></span>
+    </label>
     <label>Or JSON File: <input id="file" type="file" accept="application/json,.json" /></label>
     <button type="button" id="toggle">Stats drawer</button>
     <span class="meta" id="meta"></span>
@@ -256,6 +288,9 @@
     });
 
     loadTracesList();
+    const urlParams = new URLSearchParams(location.search);
+    const traceParam = urlParams.get("trace");
+    if (traceParam) loadTraceFile(traceParam);
 
     let presetsByCategory = {};
 
