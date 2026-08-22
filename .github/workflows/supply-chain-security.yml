@@ -1,0 +1,80 @@
+name: Supply Chain Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  osv:
+    name: OSV-Scanner (dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google/osv-scanner/actions/scanner@v1
+        id: osv
+        with:
+          fail-on-vuln: true  # BLOCKER: published vuln fails
+      - uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: ${{ steps.osv.outputs.sarif }}
+        continue-on-error: true
+
+  pip-audit:
+    name: pip-audit (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pip-audit
+        run: pip install pip-audit
+      - name: Audit Python deps
+        run: pip-audit -r requirements.txt
+
+  socket:
+    name: Socket (malware / publishers)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: socketdev/socket-action@v3
+        with:
+          content: true
+          license: true
+        env:
+          SOCKET_API_KEY: ${{ secrets.SOCKET_API_KEY }}
+        continue-on-error: true  # FLAG, not block
+
+  gitleaks:
+    name: Gitleaks (secrets)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sbom:
+    name: Generate SBOM (Syft)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with:
+          format: 'cyclonedx'
+          output-file: 'sbom.json'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
