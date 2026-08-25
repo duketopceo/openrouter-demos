@@ -9,6 +9,8 @@ Four RouteKit demos for OpenRouter in one repo — support deflection, GTM motio
 | **Provider Ops Bakeoff** | `bakeoff/` | Head-to-head quality, latency, TTFT, TPS, and cost comparison between two models |
 | **Caesar Debate** | `caesar/` | Two models debate; Caesar judges. Traces replay in an interactive viewer |
 
+**Kurultai** is Luke's separate public [Rust/SQLite/MCP knowledge brain](https://github.com/duketopceo/kurultai) — not a fifth demo in this repo. It uses the same `OPENROUTER_API_KEY` for both the embed model and search/rerank/ask; full-text search works without a key, while vectors, rerank, and ask need OpenRouter. Portfolio: [luke-the-duke.com/openrouter](https://luke-the-duke.com/openrouter) · [projects/kurultai](https://luke-the-duke.com/projects/kurultai).
+
 ## Quick Start — Local Dashboard
 
 ```bash
