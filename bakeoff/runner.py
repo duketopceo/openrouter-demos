@@ -53,7 +53,7 @@ def load_baseline(path: Path = BASELINE_PATH) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"baseline not found: {path}")
     data = json.loads(path.read_text(encoding="utf-8"))
-    for key in ("min_quality", "max_mean_latency_ms"):
+    for key in ("min_quality", "max_mean_latency_ms", "max_total_cost_usd"):
         if key not in data:
             raise ValueError(f"baseline missing {key}")
     return data
@@ -158,6 +158,12 @@ def run_cases(
             resp_cost = resp.cost_usd
             resp_lat = resp.latency_ms
             resp_model = resp.model
+        ttft_ms = resp.ttft_ms
+        if ttft_ms is None and resp_lat > 0:
+            ttft_ms = round(resp_lat * 0.25, 2)
+        tokens_per_sec = resp.tokens_per_sec
+        if tokens_per_sec is None and resp_lat > 0 and resp.completion_tokens:
+            tokens_per_sec = round(resp.completion_tokens / (resp_lat / 1000.0), 2)
         rows.append(
             {
                 "id": case["id"],
@@ -165,6 +171,8 @@ def run_cases(
                 "checks": scored["checks"],
                 "cost_usd": resp_cost,
                 "latency_ms": resp_lat,
+                "ttft_ms": ttft_ms or 0.0,
+                "tokens_per_sec": tokens_per_sec or 0.0,
                 "model": resp_model,
                 "output_preview": scored["output"][:180],
             }
@@ -193,10 +201,19 @@ def run_cases(
 
 def launch_gate(summary: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
     reasons: list[str] = []
-    if summary["quality"] < baseline.get("min_quality", 0.85):
-        reasons.append(f"quality {summary['quality']} < baseline {baseline.get('min_quality')}")
-    if summary["mean_latency_ms"] > baseline.get("max_latency_ms", 5000.0):
-        reasons.append(f"latency {summary['mean_latency_ms']}ms > baseline {baseline.get('max_latency_ms')}ms")
+    min_quality = baseline["min_quality"]
+    if summary["quality"] < min_quality:
+        reasons.append(f"quality {summary['quality']} < baseline {min_quality}")
+    max_latency = baseline["max_mean_latency_ms"]
+    if summary["mean_latency_ms"] > max_latency:
+        reasons.append(
+            f"mean_latency_ms {summary['mean_latency_ms']} > baseline {max_latency}"
+        )
+    max_cost = baseline["max_total_cost_usd"]
+    if summary["total_cost_usd"] > max_cost:
+        reasons.append(
+            f"total_cost_usd {summary['total_cost_usd']} > baseline {max_cost}"
+        )
     return {"pass": not reasons, "reasons": reasons}
 
 
@@ -208,8 +225,8 @@ def _client_pair() -> tuple[tuple[str, ChatClient], tuple[str, ChatClient]]:
         key = os.environ.get("OPENROUTER_API_KEY", "").strip()
         if not key:
             raise RuntimeError("RUN_LIVE=1 requires OPENROUTER_API_KEY")
-        a = os.environ.get("OPENROUTER_MODEL_A", "openai/gpt-4.1-mini")
-        b = os.environ.get("OPENROUTER_MODEL_B", "anthropic/claude-3.5-haiku")
+        a = os.environ.get("OPENROUTER_MODEL_A", "nvidia/nemotron-3.5-lightning")
+        b = os.environ.get("OPENROUTER_MODEL_B", "openai/gpt-4o-mini")
         return (a, OpenRouterClient(model=a)), (b, OpenRouterClient(model=b))
     ca = StubClient.from_fixture_path(STUB_A, model="stub/capable")
     cb = StubClient.from_fixture_path(STUB_B, model="stub/sloppy")
@@ -247,7 +264,7 @@ def compare(
 
 def render(payload: dict[str, Any]) -> str:
     header = (
-        f"{'model':<26} {'n':>3}  {'quality':>7}  {'lat_ms':>8}  {'ttft_ms':>8}  "
+        f"{'model':<26} {'n':>3}  {'quality':>7}  {'lat_ms':>8}  {'est_ttft':>8}  "
         f"{'tk/s':>6}  {'cost_usd':>8}  {'gate':>6}"
     )
     lines = [header, "-" * len(header)]

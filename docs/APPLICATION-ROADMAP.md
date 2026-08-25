@@ -5,16 +5,13 @@
 
 ---
 
-## 1. Live Demo (DONE — live on Railway)
+## 1. Portfolio baked viewer (separate from local dashboard)
 
-- **URL:** https://luke-the-duke.com/openrouter
-- **Interactive dashboard** on the portfolio page:
-  - Pre-baked 3-model bakeoff (Qwen 3.8-27b, Muse Glimmer 30B, Gemma 4 31B) — **no API key needed to view** (75 real API runs committed as `src/data/bakeoff.json`)
-  - Session-only API key field (sessionStorage, auto-cleared on refresh, never stored server-side)
-  - Live test runner against the user's own OpenRouter key
-  - 4 demo cards (Deflect, Motion, Bakeoff, Caesar) with source links
-- **BDH (Dragon Hatchling) research dossier** added — Pathway's post-transformer architecture, honest research-preview framing with launch-gate eval playbook (not a fake benchmark)
-- **Repo:** `duketopceo/openrouter-demos` (public), README updated to note Railway hosting
+- **Portfolio URL:** https://luke-the-duke.com/openrouter — replays committed offline artifacts from `duketopceo/openrouter-demos`; **not** `dev_server.py`
+- **Local dashboard:** `python3 dev_server.py` → http://localhost:8080 — run harnesses, pytest, and live API tests from this repo
+- Portfolio page shows pre-baked stub/offline bakeoff JSON for reviewers without an API key
+- Session-only API key on the portfolio site (if present) is separate from this Python server
+- **Repo:** `duketopceo/openrouter-demos` (public)
 
 ## 2. Two Resumes (DONE)
 
@@ -38,10 +35,11 @@
 
 ### Applied AI (3 sentences)
 1. You build internal tools instead of buying them.
-2. You shipped a support-deflection demo with guardrails and trace replay.
+2. You shipped a support-deflection demo with guardrails, probe failures, and trace replay.
 3. You want the last 20% applied to OpenRouter support or GTM, not your own stack.
 
 ### Provider Ops (no harness speech)
+- Lead with Deflect, Motion, Bakeoff, and Probe — not Caesar debate.
 - You already debug OpenRouter providers with keys, logs, and token usage.
 - You want to turn that into launch playbooks and internal evals.
 
