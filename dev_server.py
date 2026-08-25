@@ -616,7 +616,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="card">
         <span class="card-num">03</span>
         <h3>Provider Ops Bakeoff</h3>
-        <p>Quality & latency benchmark between two models.</p>
+        <p>Quality & latency benchmark between two models. TTFT column is <strong>estimated</strong> (latency × 0.25).</p>
         <div class="card-actions">
           <div class="btn-group">
             <button class="btn demo-btn" onclick="runDemo('bakeoff')">Run</button>

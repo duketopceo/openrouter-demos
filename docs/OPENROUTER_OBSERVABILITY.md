@@ -19,7 +19,7 @@ OpenRouter is an **inference gateway**. It routes requests to upstream providers
 | Metric | How computed here |
 |--------|-------------------|
 | `latency_ms` | Wall clock around HTTP POST |
-| `ttft_ms` | Estimated from latency × 0.25 unless streaming |
+| `ttft_ms` | **Estimated** from latency × 0.25 on non-streaming completions |
 | `tokens_per_sec` | `completion_tokens / (latency_ms/1000)` |
 
 ## Not available (true transformer viz impossible via gateway)
@@ -38,4 +38,5 @@ With `stream: true`, you can measure **real TTFT** from first SSE chunk. This re
 ## Related docs
 
 - `docs/KEYS_AND_CLI.md` — env vars, wrangler, credential surfaces
-- Live dashboard: `http://localhost:8080/viz/`
+- Live dashboard (local): `http://localhost:8080/viz/`
+- Portfolio baked viewer (separate): https://luke-the-duke.com/openrouter

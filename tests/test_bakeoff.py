@@ -48,9 +48,40 @@ def test_sloppy_jailbreak_fails_quality() -> None:
 
 
 def test_launch_gate_reasons() -> None:
+    baseline = {
+        "min_quality": 0.9,
+        "max_mean_latency_ms": 15000,
+        "max_total_cost_usd": 1.0,
+        "quality_epsilon": 0.05,
+    }
     gate = launch_gate(
         {"quality": 0.2, "mean_latency_ms": 10, "total_cost_usd": 0},
-        {"min_quality": 0.9, "max_mean_latency_ms": 15000, "quality_epsilon": 0.05},
+        baseline,
     )
     assert gate["pass"] is False
-    assert gate["reasons"]
+    assert any("quality" in r for r in gate["reasons"])
+
+
+def test_launch_gate_cost_and_latency() -> None:
+    baseline = {
+        "min_quality": 0.9,
+        "max_mean_latency_ms": 100,
+        "max_total_cost_usd": 0.5,
+    }
+    gate = launch_gate(
+        {"quality": 0.95, "mean_latency_ms": 200, "total_cost_usd": 0.8},
+        baseline,
+    )
+    assert gate["pass"] is False
+    assert any("mean_latency_ms" in r for r in gate["reasons"])
+    assert any("total_cost_usd" in r for r in gate["reasons"])
+
+
+def test_run_cases_copies_estimated_ttft() -> None:
+    cases = load_cases()
+    client = StubClient.from_fixture_path(STUB_A, model="stub/capable")
+    client.index_tickets(cases)
+    summary = run_cases(client, cases[:1])
+    row = summary["cases"][0]
+    assert row["ttft_ms"] == 2.0  # 8ms * 0.25
+    assert summary["mean_ttft_ms"] == 2.0
