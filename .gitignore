@@ -12,3 +12,5 @@ dist/
 build/
 bakeoff_results.json
 .wrangler/
+
+.codebase-memory/
