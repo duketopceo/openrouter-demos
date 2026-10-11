@@ -2,7 +2,7 @@
 
 **Repo:** [duketopceo/openrouter-demos](https://github.com/duketopceo/openrouter-demos)  
 **Purpose:** RouteKit hiring harnesses on OpenRouter — support deflection, GTM motion, provider bakeoff, guardrail probe, Caesar debate. RouteKit is a synthetic stand-in, not OpenRouter.  
-**Last updated:** 2026-08-25
+**Last updated:** 2026-10-11
 
 ---
 
@@ -18,8 +18,8 @@
 | 5 | CI + bootstrap + bugfixes | ✅ Done |
 | 6 | Harden + ship (streaming, baked demo, model catalog) | ✅ Done |
 | 7 | Portfolio hub integration (luke-the-duke.com) | ✅ Done (2026-08-20) |
-| 8 | Live OpenRouter run + bakeoff sign-off | 🔳 Pending — needs a blessed live run + filled `launch_note.md` |
-| 9 | Submission polish (walkthrough redo, launch note) | 🔳 Partial (README link + topics done) |
+| 8 | Live OpenRouter run + bakeoff sign-off | ⚪ Optional — offline gate passes in CI; a live run is not required |
+| 9 | Polish (walkthrough redo, launch note) | ⚪ Optional — core polish done; remaining items are nice-to-have |
 
 ---
 
@@ -93,9 +93,9 @@ The portfolio page is a static/baked replay surface. The **local dashboard** rem
 
 ---
 
-## Phase 8 — Live demo run + bakeoff sign-off
+## Phase 8 — Live demo run + bakeoff sign-off (optional)
 
-**Status: 🔳 Pending.** Offline stubs pass the gate in CI; a **blessed live bakeoff** with real API numbers has not been committed to `bakeoff/launch_note.md`.
+**Status: ⚪ Optional.** Offline stubs pass the gate in CI, and the repo is complete without a live run. If you want real API numbers, follow the checklist below; no blessed live bakeoff has been committed to `bakeoff/launch_note.md`.
 
 Requires `OPENROUTER_API_KEY` and `RUN_LIVE=1`.
 
@@ -144,16 +144,16 @@ Swap via dashboard or `.env` (`OPENROUTER_MODEL`, `OPENROUTER_MODEL_A`, `OPENROU
 
 ---
 
-## Phase 9 — Submission polish
+## Phase 9 — Polish (optional)
 
-For OpenRouter hiring / portfolio handoff:
+Core polish is done. The unchecked items are optional follow-ups:
 
 - [x] Screen recording shipped to Cloudflare R2 + wired into portfolio hub (`openrouter-demos-walkthrough.mp4`, offline ~20s)
 - [x] README links to ROADMAP (2026-08-20)
 - [x] GitHub topics pinned: `openrouter`, `llm-evals`, `tool-calling` (2026-08-20)
 - [x] Sanitized `demo/baked/results/` JSON committed for reviewers who skip live API
-- [ ] **Redo walkthrough** — extend into a full live run recording (local dashboard → run live → results → Caesar replay); logged as a follow-up, not started
-- [ ] **Launch note** — fill after Phase 8 live bakeoff
+- [ ] *(optional)* **Redo walkthrough** — extend into a full live run recording (local dashboard → run live → results → Caesar replay)
+- [ ] *(optional)* **Launch note** — fill only if a Phase 8 live bakeoff is run
 
 ---
 

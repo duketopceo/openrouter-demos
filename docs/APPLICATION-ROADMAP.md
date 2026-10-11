@@ -1,7 +1,7 @@
 # OpenRouter Application — Final Phase Roadmap
 
-**Status:** In progress — wrapping up the deliverable.
-**Date:** 2026-08-20
+**Status:** Closed — the OpenRouter applications have concluded. Kept for reference; no further work is planned against this roadmap.
+**Date:** 2026-08-20 (closed 2026-10-11)
 
 ---
 
