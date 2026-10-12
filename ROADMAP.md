@@ -1,3 +1,8 @@
+> **Program roadmap (2026-10-11): see [docs/plans/2026-10-11-001-program-roadmap-plan.md](docs/plans/2026-10-11-001-program-roadmap-plan.md).**
+> Now: U1 delete the dead dashboard fallback (easy), U2 measured TTFT via streaming (medium), U3 CI covers the probe harness and lint (easy).
+> Next: U4 models.json refresh, U5 gate with variance, U6 server split (probably skip), U7 JSONL export, U8 shared tokens. Later: U9 live run (optional), U10 reported cost.
+> The phase history below is unchanged.
+
 # OpenRouter Demos — Roadmap
 
 **Repo:** [duketopceo/openrouter-demos](https://github.com/duketopceo/openrouter-demos)  
