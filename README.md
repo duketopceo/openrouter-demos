@@ -1,6 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/wordmark-dark.svg">
+    <img src="assets/brand/wordmark.svg" alt="openrouter / demos" height="48">
+  </picture>
+</p>
+
 # OpenRouter Demos
 
-Five RouteKit harnesses for OpenRouter hiring demos — support deflection, GTM motion, provider bakeoff, guardrail probe, and Caesar model debate. **RouteKit** is a synthetic stand-in for an OpenAI-compatible gateway in prompts and fixtures; it is not OpenRouter and not a real product.
+Five offline-first harnesses that show how to deflect, route, compare, probe and replay LLM work through OpenRouter. They are RouteKit harnesses for OpenRouter hiring demos — support deflection, GTM motion, provider bakeoff, guardrail probe, and Caesar model debate. **RouteKit** is a synthetic stand-in for an OpenAI-compatible gateway in prompts and fixtures; it is not OpenRouter and not a real product.
+
+Every harness runs with no API key against recorded stubs; live mode is opt-in.
 
 Run everything from the **local dashboard** at `http://localhost:8080`, or from the CLI.
 
@@ -117,6 +126,36 @@ results/   JSON outputs + runs.db (gitignored; populated from demo/baked)
 - Python 3.11+
 - Dependencies: `httpx`, `pytest` (see `requirements.txt` / `pyproject.toml`)
 
+## How it works
+
+```mermaid
+flowchart LR
+  C[cases.jsonl] --> H[harness]
+  F[stub fixtures] -->|RUN_LIVE=0| O[src/openrouter.py]
+  K[OPENROUTER_API_KEY] -->|RUN_LIVE=1| O
+  H --> O
+  O --> R[results/*.json + runs.db]
+  R --> D[dev_server.py dashboard :8080]
+```
+
+Each harness reads its cases, calls `src/openrouter.py` (live HTTP or stub replay), scores the output, and writes JSON plus a SQLite run row. The dashboard runs those same commands and reads those files.
+
+## Screenshot
+
+![Run Center, offline stubs](docs/screenshots/run-center-after.png)
+
+## Brand and design
+
+The logo is a proposal pending owner sign-off. See [DESIGN.md](DESIGN.md) and [assets/brand/](assets/brand/README.md).
+
+## Contributing
+
+Run `RUN_LIVE=0 pytest -q` before a PR. Live runs spend money, so keep them out of CI.
+
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for phase status — harnesses, local dashboard, offline fixtures, metrics, CI, baked offline demo, portfolio integration, and submission polish.
+Program roadmap with difficulty and feasibility per unit: [docs/plans/2026-10-11-001-program-roadmap-plan.md](docs/plans/2026-10-11-001-program-roadmap-plan.md). Market context: [docs/research/2026-10-10-landscape.md](docs/research/2026-10-10-landscape.md). Phase history: [ROADMAP.md](ROADMAP.md).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
