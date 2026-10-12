@@ -4,27 +4,61 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OpenRouter Run Center</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E1116'/%3E%3Cg fill='none' stroke='%23D5DDE8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 16H13L18.5 9H22'/%3E%3Cpath d='M13 16L18.5 23H22'/%3E%3C/g%3E%3Ccircle cx='7' cy='16' r='2.2' fill='%23D5DDE8'/%3E%3Ccircle cx='25' cy='9' r='3' fill='%233ECFB0'/%3E%3Ccircle cx='25' cy='23' r='2.4' fill='none' stroke='%238D99A8' stroke-width='1.8'/%3E%3C/svg%3E" />
   <style>
+    /* Gateway Ledger tokens (see DESIGN.md). Dark is the default console. */
     :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --heading: #f0f6fc;
-      --accent: #58a6ff;
-      --green: #238636;
-      --purple: #8957e5;
-      --muted: #8b949e;
-      --code: #010409;
+      --bg: #0e1116;
+      --panel: #151b23;
+      --raised: #1d2530;
+      --border: #2a3441;
+      --text: #d5dde8;
+      --heading: #f1f5fa;
+      --muted: #8d99a8;
+      --accent: #3ecfb0;
+      --on-accent: #0e1116;
+      --selected: #17403a;
+      --green: #1f9d55;
+      --ok: #4ade80;
+      --err: #ff7b72;
       --warn: #e3b341;
+      --info: #79c0ff;
+      --purple: #7c5ce0;
+      --code: #090c10;
+      --focus: #3ecfb0;
+    }
+    :root[data-theme="light"] { color-scheme: light; }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) {
+        --bg: #f5f6f3;
+        --panel: #ffffff;
+        --raised: #eef0ec;
+        --border: #d4d9d0;
+        --text: #1c232b;
+        --heading: #0e1116;
+        --muted: #55616e;
+        --accent: #0a7a66;
+        --on-accent: #ffffff;
+        --selected: #cfeee6;
+        --green: #1a7f37;
+        --ok: #1a7f37;
+        --err: #b42318;
+        --warn: #8a5a00;
+        --info: #0b5cad;
+        --purple: #5b3fc4;
+        --code: #f0f2ee;
+        --focus: #0a7a66;
+      }
+      :root:not([data-theme="dark"]) { color-scheme: light; }
     }
     * { box-sizing: border-box; }
     html { color-scheme: dark; }
+    @media (prefers-color-scheme: light) { html { color-scheme: light; } }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 1.5;
     }
     header {
@@ -82,7 +116,8 @@
       border-radius: 6px;
       font-size: 13px;
     }
-    select:focus, input:focus { outline: 2px solid rgba(88,166,255,0.3); border-color: var(--accent); }
+    select:focus, input:focus { border-color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     select[multiple] {
       min-height: 200px;
       padding: 6px;
@@ -93,7 +128,7 @@
       margin: 1px 0;
     }
     select[multiple] option:checked {
-      background: #1f3a5f;
+      background: var(--selected);
       color: var(--heading);
     }
     .checks { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
@@ -113,7 +148,7 @@
       cursor: pointer;
     }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary { background: var(--accent); color: var(--on-accent); }
     .btn-green { background: var(--green); color: #fff; }
     .btn-purple { background: var(--purple); color: #fff; }
     .btn-ghost {
@@ -140,14 +175,14 @@
       font-size: 12px;
     }
     .log-line { margin: 2px 0; }
-    .log-ok { color: #56d364; }
-    .log-err { color: #f85149; }
+    .log-ok { color: var(--ok); }
+    .log-err { color: var(--err); }
     .log-warn { color: var(--warn); }
     .progress-wrap { margin-bottom: 10px; }
     .progress-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
     .progress-bar {
       height: 8px;
-      background: #21262d;
+      background: var(--raised);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -157,9 +192,9 @@
       width: 0%;
       transition: width 0.2s ease;
     }
-    .debate-box .turn-a { color: #79c0ff; }
+    .debate-box .turn-a { color: var(--info); }
     .debate-box .turn-b { color: var(--warn); }
-    .debate-box .turn-j { color: #56d364; }
+    .debate-box .turn-j { color: var(--ok); }
     .chart-wrap { position: relative; margin-top: 12px; }
     .chart-svg { width: 100%; height: 280px; display: block; }
     .chart-bar { cursor: pointer; transition: opacity 0.15s; }
@@ -168,7 +203,7 @@
       position: fixed;
       display: none;
       z-index: 100;
-      background: #21262d;
+      background: var(--raised);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px 12px;
@@ -191,7 +226,7 @@
     }
     .history-table th { color: var(--muted); font-weight: 600; }
     .history-table tr { cursor: pointer; }
-    .history-table tr:hover { background: rgba(88,166,255,0.06); }
+    .history-table tr:hover { background: var(--raised); }
     .pill {
       display: inline-block;
       padding: 2px 8px;
@@ -199,8 +234,8 @@
       font-size: 11px;
       border: 1px solid var(--border);
     }
-    .pill-pass { border-color: var(--green); color: #56d364; }
-    .pill-fail { border-color: #f85149; color: #f85149; }
+    .pill-pass { border-color: var(--green); color: var(--ok); }
+    .pill-fail { border-color: var(--err); color: var(--err); }
     .caesar-row {
       display: grid;
       grid-template-columns: 1fr 1fr 80px auto;
@@ -226,14 +261,28 @@
       color: var(--muted);
       margin-bottom: 8px;
     }
+    .log-box:empty::before {
+      content: "Nothing yet. Pick tests and press Run selected, or start the offline demo (no key needed).";
+      color: var(--muted);
+    }
+    #debate-log:empty::before { content: "No debate yet. Pick a topic and press Start."; }
+    .history-table td, .chart-legend { font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) {
+      .progress-fill, .chart-bar { transition: none; }
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { width: 32px; height: 32px; display: block; }
     .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <h1>OpenRouter Run Center</h1>
-      <p>Select models · select tests · watch live · compare bakeoff sweeps</p>
+    <div class="brand">
+      <img src="/assets/brand/logo.svg" alt="" width="32" height="32" />
+      <div>
+        <h1>OpenRouter Run Center</h1>
+        <p>Select models · select tests · watch live · compare bakeoff sweeps</p>
+      </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <select id="run-mode" style="width:auto;">
@@ -657,7 +706,7 @@
       const svg = document.getElementById("chart");
       svg.innerHTML = "";
       if (!runs.length) {
-        svg.innerHTML = '<text x="400" y="140" text-anchor="middle" fill="#8b949e" font-size="14">Run a multi-model bakeoff sweep to see the chart</text>';
+        svg.innerHTML = '<text x="400" y="140" text-anchor="middle" fill="var(--muted)" font-size="14">Run a multi-model bakeoff sweep to see the chart</text>';
         return;
       }
       const W = 800, H = 280, pad = { l: 48, r: 16, t: 16, b: 72 };
@@ -679,7 +728,7 @@
         rect.setAttribute("y", y);
         rect.setAttribute("width", barW);
         rect.setAttribute("height", h);
-        rect.setAttribute("fill", pass ? "#238636" : "#58a6ff");
+        rect.setAttribute("fill", pass ? "var(--green)" : "var(--accent)");
         rect.setAttribute("rx", "3");
         rect.dataset.idx = i;
         rect.addEventListener("mouseenter", e => showTip(e, run));
@@ -692,7 +741,7 @@
         pct.setAttribute("x", x + barW / 2);
         pct.setAttribute("y", y - 4);
         pct.setAttribute("text-anchor", "middle");
-        pct.setAttribute("fill", "#c9d1d9");
+        pct.setAttribute("fill", "var(--text)");
         pct.setAttribute("font-size", "10");
         pct.textContent = (q * 100).toFixed(0) + "%";
         svg.appendChild(pct);
@@ -701,7 +750,7 @@
         lbl.setAttribute("x", x + barW / 2);
         lbl.setAttribute("y", H - pad.b + 14);
         lbl.setAttribute("text-anchor", "end");
-        lbl.setAttribute("fill", "#8b949e");
+        lbl.setAttribute("fill", "var(--muted)");
         lbl.setAttribute("font-size", "9");
         lbl.setAttribute("transform", `rotate(-35 ${x + barW / 2} ${H - pad.b + 14})`);
         lbl.textContent = shortModel(run.model);
@@ -713,7 +762,7 @@
       axis.setAttribute("x2", W - pad.r);
       axis.setAttribute("y1", pad.t + innerH);
       axis.setAttribute("y2", pad.t + innerH);
-      axis.setAttribute("stroke", "#30363d");
+      axis.setAttribute("stroke", "var(--border)");
       svg.insertBefore(axis, svg.firstChild);
     }
 
@@ -726,7 +775,7 @@
         `Latency: ${run.mean_latency_ms != null ? Math.round(run.mean_latency_ms) + " ms" : "—"}<br>` +
         `Cost: $${Number(run.total_cost_usd || 0).toFixed(4)}<br>` +
         `Cases: ${cases || "—"} · Gate: ${run.gate_pass === 1 ? "PASS" : run.gate_pass === 0 ? "FAIL" : "—"}<br>` +
-        `<span style="color:#8b949e">${(run.summary || "").slice(0, 120)}</span>`;
+        `<span style="color:var(--muted)">${(run.summary || "").slice(0, 120)}</span>`;
       tip.style.display = "block";
       moveTip(e);
     }
