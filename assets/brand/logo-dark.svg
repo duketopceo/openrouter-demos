@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="OpenRouter Demos mark">
+  <title>OpenRouter Demos mark, for light backgrounds (proposal)</title>
+  <rect width="32" height="32" rx="7" fill="#F5F6F3" stroke="#D4D9D0"/>
+  <g fill="none" stroke="#1C232B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 16H13L18.5 9H22"/>
+    <path d="M13 16L18.5 23H22"/>
+  </g>
+  <circle cx="7" cy="16" r="2.2" fill="#1C232B"/>
+  <circle cx="25" cy="9" r="3" fill="#0A7A66"/>
+  <circle cx="25" cy="23" r="2.4" fill="none" stroke="#55616E" stroke-width="1.8"/>
+</svg>
